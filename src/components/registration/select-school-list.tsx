@@ -26,11 +26,7 @@ export function SelectSchoolList({
         <h1 className="text-[28px] leading-[34px] font-medium tracking-[0.42px] text-foreground">
           {MOCK_SCHOOLS.length} results for “{email}”
         </h1>
-        <Button
-          asChild
-          variant="outline"
-          className="h-auto rounded-[4px] border-foreground px-2 py-1.5 text-sm font-medium tracking-[0.07px] shadow-none"
-        >
+        <Button asChild variant="outline" size="sm">
           <Link href={changeHref}>Change</Link>
         </Button>
       </div>

@@ -30,11 +30,16 @@ export function PartnerHeader({
           </Link>
           <nav className="flex items-start gap-6">
             <Button
-              type="button"
+              asChild
               variant="ghost"
-              className="h-auto px-0 text-sm font-normal tracking-[0.07px] text-muted-foreground hover:bg-transparent hover:text-foreground"
+              className={cn(
+                "h-auto px-0 text-sm font-normal tracking-[0.07px] hover:bg-transparent hover:text-foreground",
+                activeNav === "profile"
+                  ? "text-foreground"
+                  : "text-muted-foreground",
+              )}
             >
-              Profile
+              <Link href={`/profile?${query}`}>Profile</Link>
             </Button>
             <Button
               asChild

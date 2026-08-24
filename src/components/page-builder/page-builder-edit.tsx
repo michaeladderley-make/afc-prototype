@@ -47,11 +47,7 @@ function PlaceholderSlot({
         {label}
       </EmptyTitle>
       <EmptyContent className="w-auto max-w-none">
-        <Button
-          type="button"
-          variant="outline"
-          className="h-auto rounded-[4px] border-foreground px-2 py-1.5 text-sm font-medium tracking-[0.07px] shadow-none"
-        >
+        <Button type="button" variant="outline" size="sm">
           Change
         </Button>
       </EmptyContent>
@@ -119,7 +115,6 @@ function CanvasTextEditor({
               maxLength={maxLength}
               rows={rows}
               onChange={(event) => setDraft(event.target.value)}
-              className="rounded-[4px] text-base shadow-none md:text-base"
             />
             <FieldDescription>
               {draft.length}/{maxLength} characters
@@ -129,14 +124,12 @@ function CanvasTextEditor({
             <Button
               type="button"
               variant="outline"
-              className="h-12 rounded-[4px] border-foreground px-6 text-base shadow-none"
               onClick={() => setOpen(false)}
             >
               Cancel
             </Button>
             <Button
               type="button"
-              className="h-12 rounded-[4px] px-6 text-base"
               disabled={draft.trim().length === 0}
               onClick={() => {
                 const nextText = draft.trim().slice(0, maxLength);

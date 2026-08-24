@@ -4,7 +4,6 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import { MOCK_PAGES } from "@/lib/mock-pages";
 import { partnerQuery, type PartnerContext } from "@/lib/partner-context";
 
@@ -13,9 +12,7 @@ export function MyPages({ context }: { context: PartnerContext }) {
     <div className="mx-auto flex w-full max-w-[900px] flex-col gap-10">
       <div className="flex items-center justify-between">
         <h1 className="text-[28px] font-medium text-foreground">My Pages</h1>
-        <Button type="button" className="h-12 rounded-[4px] px-6 text-base">
-          Add Page
-        </Button>
+        <Button type="button">Add Page</Button>
       </div>
 
       {MOCK_PAGES.map((page) => {
@@ -57,37 +54,24 @@ export function MyPages({ context }: { context: PartnerContext }) {
                 </p>
               </div>
             </div>
-            <ButtonGroup className="shrink-0 gap-2">
-              <ButtonGroup>
-                {editHref ? (
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="h-12 rounded-[4px] border-foreground px-6 text-base shadow-none"
-                  >
-                    <Link href={editHref}>Edit</Link>
-                  </Button>
-                ) : (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="h-12 rounded-[4px] border-foreground px-6 text-base shadow-none"
-                  >
-                    Edit
-                  </Button>
-                )}
-              </ButtonGroup>
-              <ButtonGroup>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-12 rounded-[4px] border-foreground px-6 text-base shadow-none"
-                  aria-label={`More actions for ${page.name}`}
-                >
-                  ...
+            <div className="flex shrink-0 items-center gap-3">
+              {editHref ? (
+                <Button asChild variant="outline">
+                  <Link href={editHref}>Edit</Link>
                 </Button>
-              </ButtonGroup>
-            </ButtonGroup>
+              ) : (
+                <Button type="button" variant="outline">
+                  Edit
+                </Button>
+              )}
+              <Button
+                type="button"
+                variant="outline"
+                aria-label={`More actions for ${page.name}`}
+              >
+                ...
+              </Button>
+            </div>
           </div>
         );
       })}

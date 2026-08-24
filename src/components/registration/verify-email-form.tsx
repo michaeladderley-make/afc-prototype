@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import {
   Field,
   FieldDescription,
@@ -77,19 +76,13 @@ export function VerifyEmailForm({
             autoComplete="one-time-code"
             aria-invalid={error ? true : undefined}
           >
-            <InputOTPGroup className="rounded-[4px]">
-              <InputOTPSlot
-                index={0}
-                className="size-12 text-base shadow-none first:rounded-l-[4px]"
-              />
-              <InputOTPSlot index={1} className="size-12 text-base shadow-none" />
-              <InputOTPSlot index={2} className="size-12 text-base shadow-none" />
-              <InputOTPSlot index={3} className="size-12 text-base shadow-none" />
-              <InputOTPSlot index={4} className="size-12 text-base shadow-none" />
-              <InputOTPSlot
-                index={5}
-                className="size-12 text-base shadow-none last:rounded-r-[4px]"
-              />
+            <InputOTPGroup>
+              <InputOTPSlot index={0} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={2} />
+              <InputOTPSlot index={3} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={5} />
             </InputOTPGroup>
           </InputOTP>
           <FieldError>{error}</FieldError>
@@ -98,27 +91,20 @@ export function VerifyEmailForm({
           ) : null}
         </Field>
 
-        <ButtonGroup className="gap-3">
-          <ButtonGroup>
-            <Button type="submit" className="h-12 w-fit rounded-[4px] px-6 text-base">
-              Verify
-            </Button>
-          </ButtonGroup>
-          <ButtonGroup>
-            <Button
-              type="button"
-              variant="outline"
-              className="h-12 w-fit rounded-[4px] border-foreground px-6 text-base shadow-none"
-              onClick={() => {
-                setCode("");
-                setError(null);
-                setStatus("resent");
-              }}
-            >
-              Resend Code
-            </Button>
-          </ButtonGroup>
-        </ButtonGroup>
+        <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              setCode("");
+              setError(null);
+              setStatus("resent");
+            }}
+          >
+            Resend Code
+          </Button>
+          <Button type="submit">Verify</Button>
+        </div>
       </FieldGroup>
     </form>
   );

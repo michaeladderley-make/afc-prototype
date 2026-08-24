@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import {
   Card,
   CardContent,
@@ -28,13 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { School } from "@/lib/mock-schools";
-
-const ROLE_OPTIONS = [
-  { value: "principal", label: "Principal" },
-  { value: "development-officer", label: "Development officer" },
-  { value: "athletic-director", label: "Athletic director" },
-  { value: "other", label: "Other" },
-] as const;
+import { ROLE_OPTIONS } from "@/lib/school-roles";
 
 export function ClaimSchoolForm({
   email,
@@ -46,8 +39,8 @@ export function ClaimSchoolForm({
   school: School;
 }) {
   const router = useRouter();
-  const [firstName, setFirstName] = useState("Jordan");
-  const [lastName, setLastName] = useState("Lee");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [role, setRole] = useState("");
   const canContinue =
     firstName.trim().length > 0 &&
@@ -115,7 +108,7 @@ export function ClaimSchoolForm({
             type="email"
             value={email}
             readOnly
-            className="h-12 rounded-[4px] text-base text-muted-foreground opacity-40 shadow-none"
+            className="text-muted-foreground opacity-40"
           />
         </Field>
 
@@ -128,7 +121,6 @@ export function ClaimSchoolForm({
               id="first-name"
               value={firstName}
               onChange={(event) => setFirstName(event.target.value)}
-              className="h-12 rounded-[4px] text-base shadow-none"
             />
           </Field>
           <Field className="gap-2">
@@ -139,7 +131,6 @@ export function ClaimSchoolForm({
               id="last-name"
               value={lastName}
               onChange={(event) => setLastName(event.target.value)}
-              className="h-12 rounded-[4px] text-base shadow-none"
             />
           </Field>
         </FieldGroup>
@@ -147,10 +138,7 @@ export function ClaimSchoolForm({
         <Field className="gap-2">
           <FieldLabel className="tracking-[0.07px]">Role at school</FieldLabel>
           <Select value={role} onValueChange={setRole}>
-            <SelectTrigger
-              className="h-12 w-full rounded-[4px] px-4 text-base shadow-none data-[size=default]:h-12"
-              aria-label="Role at school"
-            >
+            <SelectTrigger className="w-full" aria-label="Role at school">
               <SelectValue placeholder="Principal, development officer, or other" />
             </SelectTrigger>
             <SelectContent>
@@ -167,27 +155,14 @@ export function ClaimSchoolForm({
           </FieldDescription>
         </Field>
 
-        <ButtonGroup className="gap-3">
-          <ButtonGroup>
-            <Button
-              type="submit"
-              disabled={!canContinue}
-              className="h-12 rounded-[4px] px-6 text-base"
-            >
-              Continue
-            </Button>
-          </ButtonGroup>
-          <ButtonGroup>
-            <Button
-              asChild
-              type="button"
-              variant="outline"
-              className="h-12 rounded-[4px] border-foreground px-6 text-base shadow-none"
-            >
-              <Link href={resultsHref}>Back to results</Link>
-            </Button>
-          </ButtonGroup>
-        </ButtonGroup>
+        <div className="flex items-center gap-3">
+          <Button asChild variant="outline">
+            <Link href={resultsHref}>Back to results</Link>
+          </Button>
+          <Button type="submit" disabled={!canContinue}>
+            Continue
+          </Button>
+        </div>
       </FieldGroup>
     </form>
   );

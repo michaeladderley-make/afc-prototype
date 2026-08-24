@@ -109,7 +109,6 @@ export function GettingStartedForm({
             }}
             placeholder="user@example.com"
             aria-invalid={emailError ? true : undefined}
-            className="h-12 rounded-[4px] px-4 text-base shadow-none md:text-base"
           />
           <FieldError>{emailError}</FieldError>
         </Field>
@@ -119,7 +118,7 @@ export function GettingStartedForm({
           Owner is allowed.
         </FieldDescription>
 
-        <Button type="submit" className="h-12 w-fit rounded-[4px] px-6 text-base">
+        <Button type="submit" className="w-fit">
           Search
         </Button>
       </FieldGroup>

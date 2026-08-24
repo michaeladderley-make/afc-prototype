@@ -48,17 +48,13 @@ export function SchoolResultCard({
         {isAvailable ? (
           <Button
             type="button"
-            className="h-12 shrink-0 rounded-[4px] px-6 text-base"
+            className="shrink-0"
             onClick={() => onSelect?.(school)}
           >
             Claim this school
           </Button>
         ) : (
-          <Button
-            type="button"
-            variant="outline"
-            className="h-12 shrink-0 rounded-[4px] border-foreground px-6 text-base shadow-none"
-          >
+          <Button type="button" variant="outline" className="shrink-0">
             Contact AFC
           </Button>
         )}

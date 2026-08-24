@@ -3,7 +3,6 @@
 import { Monitor, Smartphone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import { Separator } from "@/components/ui/separator";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { PreviewMode } from "@/components/page-builder/preview-mode";
@@ -33,43 +32,23 @@ export function PageBuilderToolbar({
           }}
           variant="outline"
           spacing={0}
-          size="lg"
           aria-label="Preview size"
-          className="rounded-[4px]"
         >
-          <ToggleGroupItem
-            value="desktop"
-            aria-label="Desktop preview"
-            className="h-12 rounded-l-[4px] px-4 text-base"
-          >
-            <Monitor />
+          <ToggleGroupItem value="desktop" aria-label="Desktop preview">
+            <Monitor data-icon="inline-start" />
             Desktop
           </ToggleGroupItem>
-          <ToggleGroupItem
-            value="mobile"
-            aria-label="Mobile preview"
-            className="h-12 rounded-r-[4px] px-4 text-base"
-          >
-            <Smartphone />
+          <ToggleGroupItem value="mobile" aria-label="Mobile preview">
+            <Smartphone data-icon="inline-start" />
             Mobile
           </ToggleGroupItem>
         </ToggleGroup>
-        <ButtonGroup className="justify-self-end gap-3">
-          <ButtonGroup>
-            <Button
-              type="button"
-              variant="outline"
-              className="h-12 rounded-[4px] border-foreground px-6 text-base shadow-none"
-            >
-              Save draft
-            </Button>
-          </ButtonGroup>
-          <ButtonGroup>
-            <Button type="button" className="h-12 rounded-[4px] px-6 text-base">
-              Publish
-            </Button>
-          </ButtonGroup>
-        </ButtonGroup>
+        <div className="flex items-center justify-self-end gap-3">
+          <Button type="button" variant="outline">
+            Save draft
+          </Button>
+          <Button type="button">Publish</Button>
+        </div>
       </div>
       <Separator />
     </div>
