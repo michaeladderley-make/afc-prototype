@@ -37,6 +37,7 @@ export default async function SettingUpProfilePage({
     firstName: givenName,
     lastName: familyName,
     role: schoolRole,
+    welcome: "1",
   }).toString()}`;
 
   return <SettingUpProfile nextHref={nextHref} />;

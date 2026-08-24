@@ -7,8 +7,15 @@ import { partnerQuery } from "@/lib/partner-context";
 export default async function PageBuilderPage({
   searchParams,
 }: PageProps<"/page-builder">) {
-  const { email, type, school: schoolId, firstName, lastName, role } =
-    await searchParams;
+  const {
+    email,
+    type,
+    school: schoolId,
+    firstName,
+    lastName,
+    role,
+    welcome,
+  } = await searchParams;
   const workEmail = typeof email === "string" ? email.trim() : "";
   const registrantType = typeof type === "string" ? type : "school";
   const selectedSchoolId = typeof schoolId === "string" ? schoolId : "";
@@ -43,6 +50,7 @@ export default async function PageBuilderPage({
         lastName: familyName,
         role: schoolRole,
       })}
+      showWelcome={welcome === "1"}
     />
   );
 }

@@ -22,6 +22,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
+import { DonationFormElement } from "@/components/page-builder/donation-form";
 import { cn } from "@/lib/utils";
 import type { PreviewMode } from "@/components/page-builder/preview-mode";
 import type { School } from "@/lib/mock-schools";
@@ -186,8 +187,8 @@ export function PageBuilderEdit({
           />
           <div
             className={cn(
-              "flex flex-col gap-4",
-              isMobile ? "w-full" : "w-full max-w-[524px]",
+              "flex min-w-0 flex-col gap-4",
+              isMobile ? "w-full" : "flex-1",
             )}
           >
             <p className="text-xs font-medium text-muted-foreground">
@@ -206,6 +207,7 @@ export function PageBuilderEdit({
               )}
             />
           </div>
+          <DonationFormElement className={isMobile ? "max-w-none" : undefined} />
         </div>
 
         <PlaceholderSlot
