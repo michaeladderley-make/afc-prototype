@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 2,
+  "telemetry": {
+    "metricsFile": ".cursor/loop-metrics.jsonl"
+  },
+  "verification": {
+    "maxIterations": 10,
+    "quickFixThreshold": 5,
+    "executionDescriptors": "auto",
+    "modules": [
+      {
+        "name": "app",
+        "path": ".",
+        "extensions": "ts,tsx,js,jsx",
+        "lintDescriptor": { "argv": ["npm", "run", "lint"] },
+        "typeDescriptor": { "argv": ["npx", "tsc", "--noEmit"] },
+        "testDescriptor": { "argv": ["npm", "run", "test"] }
+      }
+    ]
+  },
+  "workspace": {
+    "depsCheck": { "argv": ["bash", "-lc", "test -d node_modules"] },
+    "depsInstall": { "argv": ["npm", "ci"] },
+    "devServer": { "argv": ["npm", "run", "dev"] },
+    "devUrl": "http://localhost:3000",
+    "healthCheckTimeoutSeconds": 30
+  }
+}

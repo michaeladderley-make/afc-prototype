@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.cursor/session-state.json
+.cursor/loop-metrics.jsonl
+.cursor/loop-metrics.jsonl.lock
+.cursor/harness-context.json
+.cursor/logs/
+.cursor/.run-locks/
+.cursor/run-locks/
