@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,14 +34,17 @@ const SCHOOL_STORY_MAX_LENGTH = 300;
 function PlaceholderSlot({
   label,
   className,
+  stacked = false,
 }: {
   label: string;
   className?: string;
+  stacked?: boolean;
 }) {
   return (
     <Empty
       className={cn(
-        "flex-none flex-row gap-3 rounded-[4px] border border-dashed border-muted-foreground bg-muted p-0",
+        "flex-none rounded-[4px] border border-dashed border-muted-foreground bg-muted",
+        stacked ? "flex-col gap-2 p-3" : "flex-row gap-3 p-0",
         className,
       )}
     >
@@ -63,6 +67,8 @@ function CanvasTextEditor({
   dialogDescription,
   fieldId,
   fieldLabel,
+  sectionLabel,
+  sectionAlign = "start",
   className,
   rows = 3,
 }: {
@@ -72,6 +78,8 @@ function CanvasTextEditor({
   dialogDescription: string;
   fieldId: string;
   fieldLabel: string;
+  sectionLabel: string;
+  sectionAlign?: "start" | "center";
   className?: string;
   rows?: number;
 }) {
@@ -79,14 +87,39 @@ function CanvasTextEditor({
   const [draft, setDraft] = useState(value);
   const [open, setOpen] = useState(false);
 
+  function openEditor() {
+    setDraft(text);
+    setOpen(true);
+  }
+
   return (
-    <>
+    <div
+      className={cn(
+        "flex flex-col gap-4",
+        sectionAlign === "center" && "items-center text-center",
+      )}
+    >
+      <div
+        className={cn(
+          "flex items-center gap-1.5",
+          sectionAlign === "center" && "justify-center",
+        )}
+      >
+        <p className="text-xs font-medium text-muted-foreground">
+          {sectionLabel}
+        </p>
+        <button
+          type="button"
+          className="inline-flex size-5 items-center justify-center text-muted-foreground hover:text-foreground"
+          aria-label={dialogTitle}
+          onClick={openEditor}
+        >
+          <Pencil className="size-3.5" />
+        </button>
+      </div>
       <button
         type="button"
-        onClick={() => {
-          setDraft(text);
-          setOpen(true);
-        }}
+        onClick={openEditor}
         className={cn(
           "rounded-[4px] outline-none hover:outline hover:outline-dashed hover:outline-muted-foreground focus-visible:ring-2 focus-visible:ring-ring",
           className,
@@ -146,7 +179,7 @@ function CanvasTextEditor({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }
 
@@ -171,29 +204,31 @@ export function PageBuilderEdit({
       <div
         className={cn(
           isMobile
-            ? "flex h-full w-full max-w-[390px] flex-col gap-5 overflow-hidden rounded-[28px] border border-border bg-background p-5"
+            ? "flex h-full w-full max-w-[390px] flex-col gap-5 overflow-y-auto rounded-[28px] border border-border bg-background px-5 pt-8 pb-8"
             : "flex flex-col",
         )}
       >
         <div
           className={cn(
             "flex",
-            isMobile ? "flex-col items-start gap-4" : "items-center gap-7",
+            isMobile ? "flex-col gap-5" : "items-center gap-7",
           )}
         >
           <PlaceholderSlot
             label="School Logo"
-            className={isMobile ? "size-[120px] shrink-0" : "size-[250px] shrink-0"}
+            stacked={isMobile}
+            className={
+              isMobile
+                ? "mx-auto size-[120px] shrink-0"
+                : "size-[250px] shrink-0"
+            }
           />
           <div
             className={cn(
-              "flex min-w-0 flex-col gap-4",
+              "flex min-w-0 flex-col",
               isMobile ? "w-full" : "flex-1",
             )}
           >
-            <p className="text-xs font-medium text-muted-foreground">
-              Welcome Statement
-            </p>
             <CanvasTextEditor
               value={school.welcomeStatement}
               maxLength={WELCOME_STATEMENT_MAX_LENGTH}
@@ -201,31 +236,31 @@ export function PageBuilderEdit({
               dialogDescription="This is the headline on the school’s public fundraising page."
               fieldId="welcome-statement"
               fieldLabel="Welcome statement"
+              sectionLabel="Welcome Statement"
               className={cn(
                 "text-left font-bold text-foreground",
                 isMobile ? "text-[28px] leading-8" : "text-[44px] leading-none",
               )}
             />
           </div>
-          <DonationFormElement className={isMobile ? "max-w-none" : undefined} />
+          <DonationFormElement className={isMobile ? "w-full max-w-none" : undefined} />
         </div>
 
         <PlaceholderSlot
           label="Cover Image"
           className={
-            isMobile ? "min-h-[220px] w-full flex-1" : "mt-5 h-[500px] w-full"
+            isMobile
+              ? "aspect-[2/1] min-h-[160px] w-full shrink-0"
+              : "mt-5 h-[500px] w-full"
           }
         />
 
         <div
           className={cn(
-            "flex flex-col items-center gap-4 text-center",
+            "flex flex-col",
             isMobile ? "w-full" : "mx-auto mt-12 w-full max-w-[747px]",
           )}
         >
-          <p className="text-xs font-medium text-muted-foreground">
-            School Story
-          </p>
           <CanvasTextEditor
             value={school.schoolStory}
             maxLength={SCHOOL_STORY_MAX_LENGTH}
@@ -233,6 +268,8 @@ export function PageBuilderEdit({
             dialogDescription="This is the story visitors see on the school’s public fundraising page."
             fieldId="school-story"
             fieldLabel="School story"
+            sectionLabel="School Story"
+            sectionAlign="center"
             rows={6}
             className={cn(
               "text-center text-foreground",
