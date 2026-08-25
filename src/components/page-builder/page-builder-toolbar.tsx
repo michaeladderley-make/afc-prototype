@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Monitor, Smartphone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -11,10 +12,12 @@ export function PageBuilderToolbar({
   title,
   preview,
   onPreviewChange,
+  continueHref,
 }: {
   title: string;
   preview: PreviewMode;
   onPreviewChange: (preview: PreviewMode) => void;
+  continueHref: string;
 }) {
   return (
     <div>
@@ -47,7 +50,9 @@ export function PageBuilderToolbar({
           <Button type="button" variant="outline">
             Save draft
           </Button>
-          <Button type="button">Publish</Button>
+          <Button asChild>
+            <Link href={continueHref}>Continue</Link>
+          </Button>
         </div>
       </div>
       <Separator />

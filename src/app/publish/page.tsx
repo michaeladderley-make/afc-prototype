@@ -1,0 +1,72 @@
+import { redirect } from "next/navigation";
+
+import { PartnerHeader } from "@/components/partner/partner-header";
+import { PublishSettings } from "@/components/publish/publish-settings";
+import { getSchoolById } from "@/lib/mock-schools";
+import { partnerQuery } from "@/lib/partner-context";
+
+export default async function PublishPage({
+  searchParams,
+}: PageProps<"/publish">) {
+  const {
+    email,
+    type,
+    school: schoolId,
+    firstName,
+    lastName,
+    role,
+  } = await searchParams;
+  const workEmail = typeof email === "string" ? email.trim() : "";
+  const registrantType = typeof type === "string" ? type : "school";
+  const selectedSchoolId = typeof schoolId === "string" ? schoolId : "";
+  const givenName = typeof firstName === "string" ? firstName.trim() : "";
+  const familyName = typeof lastName === "string" ? lastName.trim() : "";
+  const schoolRole = typeof role === "string" ? role.trim() : "";
+  const school = getSchoolById(selectedSchoolId);
+
+  if (!workEmail) {
+    redirect("/");
+  }
+
+  if (
+    !school ||
+    school.status !== "available" ||
+    !givenName ||
+    !familyName ||
+    !schoolRole
+  ) {
+    redirect(
+      `/page-builder?${new URLSearchParams({
+        email: workEmail,
+        type: registrantType,
+        school: selectedSchoolId,
+        firstName: givenName,
+        lastName: familyName,
+        role: schoolRole,
+      }).toString()}`,
+    );
+  }
+
+  const context = {
+    email: workEmail,
+    type: registrantType,
+    school: school.id,
+    firstName: givenName,
+    lastName: familyName,
+    role: schoolRole,
+  };
+  const query = partnerQuery(context);
+
+  return (
+    <div className="flex min-h-full flex-col bg-background">
+      <PartnerHeader
+        userName={`${givenName} ${familyName}`}
+        schoolName={school.name}
+        query={query}
+      />
+      <main className="flex w-full flex-1 justify-center px-16 pt-24 pb-16">
+        <PublishSettings school={school} context={context} query={query} />
+      </main>
+    </div>
+  );
+}

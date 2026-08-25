@@ -42,6 +42,7 @@ export function PageBuilderWorkspace({
           title={`Personalize ${school.name}`}
           preview={preview}
           onPreviewChange={setPreview}
+          continueHref={`/publish?${query}`}
         />
       </div>
       <PageBuilderEdit school={school} preview={preview} />
