@@ -24,12 +24,34 @@ import {
 } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 import { DonationFormElement } from "@/components/page-builder/donation-form";
+import {
+  ClosingSection,
+  CreditSection,
+  DonationGoalSection,
+  DONATION_WIDGET_ID,
+  FaqAndCaptureSection,
+  HowItWorksSection,
+  ImpactSection,
+  SharePageSection,
+  scrollToDonationWidget,
+} from "@/components/page-builder/donation-page-modules";
 import { cn } from "@/lib/utils";
 import type { PreviewMode } from "@/components/page-builder/preview-mode";
 import type { School } from "@/lib/mock-schools";
 
 const WELCOME_STATEMENT_MAX_LENGTH = 80;
 const SCHOOL_STORY_MAX_LENGTH = 300;
+
+function schoolPlace(address: string) {
+  const streetCity = address.split("·")[0]?.trim() ?? address;
+  const parts = streetCity.split(",").map((part) => part.trim());
+  if (parts.length < 2) {
+    return streetCity;
+  }
+  const city = parts[parts.length - 2];
+  const state = parts[parts.length - 1].split(/\s+/)[0];
+  return `${city}, ${state}`;
+}
 
 function PlaceholderSlot({
   label,
@@ -191,6 +213,7 @@ export function PageBuilderEdit({
   preview?: PreviewMode;
 }) {
   const isMobile = preview === "mobile";
+  const place = schoolPlace(school.address);
 
   return (
     <div
@@ -198,37 +221,51 @@ export function PageBuilderEdit({
         "flex min-h-0",
         isMobile
           ? "h-full items-stretch justify-center px-6 py-10"
-          : "flex-col px-12 pt-16 pb-16",
+          : "flex-col items-center px-12 pt-10 pb-16",
       )}
     >
       <div
         className={cn(
+          "bg-background",
           isMobile
-            ? "flex h-full w-full max-w-[390px] flex-col gap-5 overflow-y-auto rounded-[28px] border border-border bg-background px-5 pt-8 pb-8"
-            : "flex flex-col",
+            ? "flex h-full w-full max-w-[390px] flex-col overflow-y-auto rounded-[28px] border border-border"
+            : "flex w-full max-w-[1000px] flex-col overflow-hidden rounded-[4px] border border-border",
         )}
       >
         <div
           className={cn(
-            "flex",
-            isMobile ? "flex-col gap-5" : "items-center gap-7",
+            "flex items-center gap-3 border-b border-border",
+            isMobile ? "flex-wrap px-5 py-4" : "px-8 py-4",
           )}
         >
+          <p className="text-sm font-medium tracking-[0.07px] text-foreground">
+            AFC
+          </p>
+          <span className="h-5 w-px bg-border" aria-hidden />
           <PlaceholderSlot
             label="School Logo"
-            stacked={isMobile}
-            className={
-              isMobile
-                ? "mx-auto size-[120px] shrink-0"
-                : "size-[250px] shrink-0"
-            }
+            stacked
+            className="h-16 w-[148px] shrink-0"
           />
-          <div
-            className={cn(
-              "flex min-w-0 flex-col",
-              isMobile ? "w-full" : "flex-1",
-            )}
+          <Button
+            type="button"
+            className="ml-auto"
+            onClick={scrollToDonationWidget}
           >
+            Give now
+          </Button>
+        </div>
+
+        <section
+          className={cn(
+            "grid items-start gap-6 border-b border-border",
+            isMobile ? "grid-cols-1 px-5 py-6" : "grid-cols-[1.1fr_0.9fr] px-8 py-8",
+          )}
+        >
+          <div className="flex min-w-0 flex-col gap-4">
+            <p className="text-xs tracking-[0.12px] text-muted-foreground">
+              {school.name} · {place}
+            </p>
             <CanvasTextEditor
               value={school.welcomeStatement}
               maxLength={WELCOME_STATEMENT_MAX_LENGTH}
@@ -238,45 +275,73 @@ export function PageBuilderEdit({
               fieldLabel="Welcome statement"
               sectionLabel="Welcome Statement"
               className={cn(
-                "text-left font-bold text-foreground",
-                isMobile ? "text-[28px] leading-8" : "text-[44px] leading-none",
+                "text-left font-medium text-foreground",
+                isMobile
+                  ? "text-[28px] leading-8"
+                  : "text-[32px] leading-[38px]",
               )}
             />
+            <PlaceholderSlot
+              label="Cover Image"
+              className={
+                isMobile
+                  ? "aspect-[2/1] min-h-[140px] w-full shrink-0"
+                  : "aspect-[16/9] min-h-[180px] w-full"
+              }
+            />
+            <p className="text-xs tracking-[0.12px] text-muted-foreground">
+              Qualified SGO · EIN 41-3421652 · Powered by Odyssey · Gift is
+              credited to {school.name}
+            </p>
           </div>
-          <DonationFormElement className={isMobile ? "w-full max-w-none" : undefined} />
-        </div>
+          <div id={DONATION_WIDGET_ID} className="w-full min-w-0">
+            <DonationFormElement
+              className={isMobile ? "w-full max-w-none" : "ml-auto"}
+            />
+          </div>
+        </section>
 
-        <PlaceholderSlot
-          label="Cover Image"
-          className={
-            isMobile
-              ? "aspect-[2/1] min-h-[160px] w-full shrink-0"
-              : "mt-5 h-[500px] w-full"
-          }
-        />
+        <DonationGoalSection compact={isMobile} />
+        <HowItWorksSection schoolName={school.name} compact={isMobile} />
+        <CreditSection compact={isMobile} />
 
-        <div
+        <section
           className={cn(
-            "flex flex-col",
-            isMobile ? "w-full" : "mx-auto mt-12 w-full max-w-[747px]",
+            "grid items-center gap-6 border-b border-border",
+            isMobile ? "grid-cols-1 px-5 py-6" : "grid-cols-2 px-8 py-8",
           )}
         >
-          <CanvasTextEditor
-            value={school.schoolStory}
-            maxLength={SCHOOL_STORY_MAX_LENGTH}
-            dialogTitle="Edit school story"
-            dialogDescription="This is the story visitors see on the school’s public fundraising page."
-            fieldId="school-story"
-            fieldLabel="School story"
-            sectionLabel="School Story"
-            sectionAlign="center"
-            rows={6}
-            className={cn(
-              "text-center text-foreground",
-              isMobile ? "text-base leading-6" : "text-[28px] leading-[1.4]",
-            )}
+          <div className="flex min-w-0 flex-col gap-4">
+            <h2 className="text-[21px] leading-[28px] font-medium text-foreground">
+              {school.name}
+            </h2>
+            <CanvasTextEditor
+              value={school.schoolStory}
+              maxLength={SCHOOL_STORY_MAX_LENGTH}
+              dialogTitle="Edit school story"
+              dialogDescription="This is the story visitors see on the school’s public fundraising page."
+              fieldId="school-story"
+              fieldLabel="School story"
+              sectionLabel="School Story"
+              rows={6}
+              className="text-left text-base leading-6 text-foreground"
+            />
+          </div>
+          <PlaceholderSlot
+            label="School Photo"
+            stacked
+            className={
+              isMobile
+                ? "aspect-[4/3] min-h-[160px] w-full"
+                : "aspect-[4/3] min-h-[200px] w-full"
+            }
           />
-        </div>
+        </section>
+
+        <ImpactSection compact={isMobile} />
+        <FaqAndCaptureSection schoolName={school.name} compact={isMobile} />
+        <SharePageSection schoolId={school.id} compact={isMobile} />
+        <ClosingSection schoolName={school.name} compact={isMobile} />
       </div>
     </div>
   );
