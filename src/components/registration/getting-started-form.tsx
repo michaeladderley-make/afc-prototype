@@ -4,6 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Field,
   FieldDescription,
@@ -33,12 +42,18 @@ export function GettingStartedForm({
   );
   const [email, setEmail] = useState(defaultEmail);
   const [emailError, setEmailError] = useState<string | null>(null);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [termsOpen, setTermsOpen] = useState(false);
+  const canSearch = isValidEmail(email) && acceptedTerms;
 
   return (
     <form
       className="flex w-full flex-col gap-5"
       onSubmit={(event) => {
         event.preventDefault();
+        if (!acceptedTerms) {
+          return;
+        }
         const nextEmail = email.trim();
         if (!isValidEmail(nextEmail)) {
           setEmailError("Enter a valid work email to continue.");
@@ -71,7 +86,7 @@ export function GettingStartedForm({
               htmlFor="type-school"
               className="text-lg leading-6 font-normal"
             >
-              Register as a School
+              I represent a school
             </FieldLabel>
           </Field>
           <Field
@@ -87,7 +102,7 @@ export function GettingStartedForm({
               htmlFor="type-network"
               className="text-lg leading-6 font-normal"
             >
-              Register as a Network
+              I represent a network
             </FieldLabel>
           </Field>
         </RadioGroup>
@@ -118,10 +133,80 @@ export function GettingStartedForm({
           Owner is allowed.
         </FieldDescription>
 
-        <Button type="submit" className="w-fit">
-          Search
+        <Field orientation="horizontal" className="w-auto items-start gap-2">
+          <Checkbox
+            id="accept-terms"
+            checked={acceptedTerms}
+            onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
+          />
+          <FieldLabel
+            htmlFor="accept-terms"
+            className="text-sm font-normal tracking-[0.07px]"
+          >
+            Read Our{" "}
+            <button
+              type="button"
+              className="underline underline-offset-4 hover:text-foreground"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setTermsOpen(true);
+              }}
+            >
+              Terms and Conditions
+            </button>
+          </FieldLabel>
+        </Field>
+
+        <Button type="submit" className="w-fit" disabled={!canSearch}>
+          Verify email
         </Button>
       </FieldGroup>
+
+      <Dialog open={termsOpen} onOpenChange={setTermsOpen}>
+        <DialogContent className="rounded-[4px] sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Terms and Conditions</DialogTitle>
+            <DialogDescription>
+              Placeholder terms for this prototype. A full legal agreement will
+              replace this copy later.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex max-h-64 flex-col gap-3 overflow-y-auto text-sm leading-6 text-foreground">
+            <p>
+              By creating a partner account, you agree to use the AFC Partner
+              Portal only for fundraising on behalf of your school or network.
+            </p>
+            <p>
+              You confirm that you are authorized to represent this
+              organization, that donation pages you publish are accurate, and
+              that you will not designate gifts to individual students.
+            </p>
+            <p>
+              AFC may update these terms. Continued use of the portal after an
+              update constitutes acceptance of the revised terms.
+            </p>
+          </div>
+          <DialogFooter className="flex-row items-center justify-end gap-3 sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setTermsOpen(false)}
+            >
+              Close
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                setAcceptedTerms(true);
+                setTermsOpen(false);
+              }}
+            >
+              Accept
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }
