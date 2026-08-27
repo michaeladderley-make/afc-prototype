@@ -1,21 +1,15 @@
 import { redirect } from "next/navigation";
 
-import { PageBuilderWorkspace } from "@/components/page-builder/page-builder-workspace";
+import { AllocationBoard } from "@/components/allocation/allocation-board";
+import { PartnerHeader } from "@/components/partner/partner-header";
 import { getSchoolById } from "@/lib/mock-schools";
 import { partnerQuery } from "@/lib/partner-context";
 
-export default async function PageBuilderPage({
+export default async function AllocationPage({
   searchParams,
-}: PageProps<"/page-builder">) {
-  const {
-    email,
-    type,
-    school: schoolId,
-    firstName,
-    lastName,
-    role,
-    welcome,
-  } = await searchParams;
+}: PageProps<"/allocation">) {
+  const { email, type, school: schoolId, firstName, lastName, role } =
+    await searchParams;
   const workEmail = typeof email === "string" ? email.trim() : "";
   const registrantType = typeof type === "string" ? type : "school";
   const selectedSchoolId = typeof schoolId === "string" ? schoolId : "";
@@ -28,14 +22,8 @@ export default async function PageBuilderPage({
     redirect("/");
   }
 
-  if (!school || school.status !== "available" || !givenName || !familyName || !schoolRole) {
-    redirect(
-      `/claim-school?${new URLSearchParams({
-        email: workEmail,
-        type: registrantType,
-        school: selectedSchoolId,
-      }).toString()}`,
-    );
+  if (!school || !givenName || !familyName || !schoolRole) {
+    redirect("/");
   }
 
   const context = {
@@ -48,12 +36,17 @@ export default async function PageBuilderPage({
   };
 
   return (
-    <PageBuilderWorkspace
-      school={school}
-      context={context}
-      userName={`${givenName} ${familyName}`}
-      query={partnerQuery(context)}
-      showWelcome={welcome === "1"}
-    />
+    <div className="flex min-h-full flex-col bg-background">
+      <PartnerHeader
+        userName={`${givenName} ${familyName}`}
+        schoolName={school.name}
+        query={partnerQuery(context)}
+        activeNav="allocation"
+        showDraftBadge={false}
+      />
+      <main className="flex w-full justify-center px-16 pt-24 pb-16">
+        <AllocationBoard />
+      </main>
+    </div>
   );
 }

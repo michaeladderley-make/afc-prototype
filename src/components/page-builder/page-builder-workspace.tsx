@@ -9,14 +9,17 @@ import { PageBuilderWelcome } from "@/components/page-builder/page-builder-welco
 import type { PreviewMode } from "@/components/page-builder/preview-mode";
 import { PartnerHeader } from "@/components/partner/partner-header";
 import type { School } from "@/lib/mock-schools";
+import type { PartnerContext } from "@/lib/partner-context";
 
 export function PageBuilderWorkspace({
   school,
+  context,
   userName,
   query,
   showWelcome = false,
 }: {
   school: School;
+  context: PartnerContext;
   userName: string;
   query: string;
   showWelcome?: boolean;
@@ -45,7 +48,7 @@ export function PageBuilderWorkspace({
           continueHref={`/publish?${query}`}
         />
       </div>
-      <PageBuilderEdit school={school} preview={preview} />
+      <PageBuilderEdit school={school} context={context} preview={preview} />
       <PageBuilderWelcome
         open={welcomeOpen}
         onOpenChange={(open) => {

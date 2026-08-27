@@ -15,7 +15,7 @@ export function PartnerHeader({
   userName: string;
   schoolName: string;
   query: string;
-  activeNav?: "profile" | "pages";
+  activeNav?: "profile" | "pages" | "allocation";
   showDraftBadge?: boolean;
 }) {
   return (
@@ -52,6 +52,18 @@ export function PartnerHeader({
               )}
             >
               <Link href={`/pages?${query}`}>Pages</Link>
+            </Button>
+            <Button
+              asChild
+              variant="ghost"
+              className={cn(
+                "h-auto px-0 text-sm font-normal tracking-[0.07px] hover:bg-transparent hover:text-foreground",
+                activeNav === "allocation"
+                  ? "text-foreground"
+                  : "text-muted-foreground",
+              )}
+            >
+              <Link href={`/allocation?${query}`}>Allocation</Link>
             </Button>
           </nav>
         </div>

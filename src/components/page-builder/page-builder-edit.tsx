@@ -35,9 +35,12 @@ import {
   SharePageSection,
   scrollToDonationWidget,
 } from "@/components/page-builder/donation-page-modules";
+import { LogoSlot } from "@/components/settings/logo-slot";
 import { cn } from "@/lib/utils";
 import type { PreviewMode } from "@/components/page-builder/preview-mode";
 import type { School } from "@/lib/mock-schools";
+import type { PartnerContext } from "@/lib/partner-context";
+import { usePageDefaults } from "@/lib/use-partner-settings";
 
 const WELCOME_STATEMENT_MAX_LENGTH = 80;
 const SCHOOL_STORY_MAX_LENGTH = 300;
@@ -207,13 +210,16 @@ function CanvasTextEditor({
 
 export function PageBuilderEdit({
   school,
+  context,
   preview = "desktop",
 }: {
   school: School;
+  context: PartnerContext;
   preview?: PreviewMode;
 }) {
   const isMobile = preview === "mobile";
   const place = schoolPlace(school.address);
+  const { settings, update } = usePageDefaults(context, school.id);
 
   return (
     <div
@@ -242,10 +248,11 @@ export function PageBuilderEdit({
             AFC
           </p>
           <span className="h-5 w-px bg-border" aria-hidden />
-          <PlaceholderSlot
-            label="School Logo"
+          <LogoSlot
+            added={settings.logo.added}
             stacked
             className="h-16 w-[148px] shrink-0"
+            onChange={() => update({ logo: { added: true } })}
           />
           <Button
             type="button"
@@ -281,13 +288,16 @@ export function PageBuilderEdit({
                   : "text-[32px] leading-[38px]",
               )}
             />
-            <PlaceholderSlot
-              label="Cover Image"
+            <LogoSlot
+              added={Boolean(settings.cover?.added)}
+              emptyLabel="Cover Image"
+              addedLabel="Cover photo added"
               className={
                 isMobile
                   ? "aspect-[2/1] min-h-[140px] w-full shrink-0"
                   : "aspect-[16/9] min-h-[180px] w-full"
               }
+              onChange={() => update({ cover: { added: true } })}
             />
             <p className="text-xs tracking-[0.12px] text-muted-foreground">
               Qualified SGO · EIN 41-3421652 · Powered by Odyssey · Gift is

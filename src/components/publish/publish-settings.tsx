@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
+import { TrackingPixelField } from "@/components/settings/tracking-pixel-field";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -17,24 +18,15 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import type { School } from "@/lib/mock-schools";
 import type { PartnerContext } from "@/lib/partner-context";
+import {
+  isContactOverridden,
+  isPixelOverridden,
+} from "@/lib/partner-settings";
+import { usePageDefaults } from "@/lib/use-partner-settings";
 
 const PAGE_URL_BASE = "donations.afc.com/";
-
-const PIXEL_PROVIDERS = [
-  { value: "gtm", label: "GTM" },
-  { value: "ga4", label: "GA4" },
-  { value: "meta", label: "Meta" },
-  { value: "microsoft-uet", label: "Microsoft UET" },
-] as const;
 
 function sanitizePath(value: string) {
   return value.replace(/^\/*/, "").replace(/\s+/g, "-");
@@ -50,13 +42,14 @@ export function PublishSettings({
   query: string;
 }) {
   const [path, setPath] = useState(school.id);
-  const [firstName, setFirstName] = useState(context.firstName);
-  const [lastName, setLastName] = useState(context.lastName);
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState(context.email);
-  const [pixelProvider, setPixelProvider] = useState<string>("gtm");
-  const [pixelId, setPixelId] = useState("");
+  const { settings, override, update } = usePageDefaults(context, school.id);
   const canPublish = path.trim().length > 0;
+  const contactHint = isContactOverridden(override)
+    ? "Custom for this page. Profile still holds the default."
+    : "Default from Profile. Edits apply to this page only.";
+  const pixelHint = isPixelOverridden(override)
+    ? "Custom for this page. Profile still holds the default."
+    : "Default from Profile. Edits apply to this page only.";
 
   return (
     <form
@@ -69,7 +62,8 @@ export function PublishSettings({
         Publish {school.name}
       </h1>
       <p className="text-base leading-6 text-muted-foreground">
-        Set the public URL and contact details for this donation page.
+        Set the public URL for this page. Contact and tracking start from your
+        Profile defaults.
       </p>
 
       <FieldGroup className="w-full gap-5">
@@ -100,9 +94,11 @@ export function PublishSettings({
             </FieldLabel>
             <Input
               id="contact-first-name"
-              value={firstName}
+              value={settings.contact.firstName}
               autoComplete="given-name"
-              onChange={(event) => setFirstName(event.target.value)}
+              onChange={(event) =>
+                update({ contact: { firstName: event.target.value } })
+              }
             />
           </Field>
           <Field className="gap-2">
@@ -111,9 +107,11 @@ export function PublishSettings({
             </FieldLabel>
             <Input
               id="contact-last-name"
-              value={lastName}
+              value={settings.contact.lastName}
               autoComplete="family-name"
-              onChange={(event) => setLastName(event.target.value)}
+              onChange={(event) =>
+                update({ contact: { lastName: event.target.value } })
+              }
             />
           </Field>
         </FieldGroup>
@@ -123,10 +121,13 @@ export function PublishSettings({
           <Input
             id="contact-phone"
             type="tel"
-            value={phone}
+            value={settings.contact.phone}
             autoComplete="tel"
-            onChange={(event) => setPhone(event.target.value)}
+            onChange={(event) =>
+              update({ contact: { phone: event.target.value } })
+            }
           />
+          <FieldDescription>{contactHint}</FieldDescription>
         </Field>
 
         <Field className="gap-2">
@@ -134,43 +135,20 @@ export function PublishSettings({
           <Input
             id="contact-email"
             type="email"
-            value={email}
+            value={settings.contact.email}
             autoComplete="email"
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(event) =>
+              update({ contact: { email: event.target.value } })
+            }
           />
         </Field>
 
-        <Field className="gap-2">
-          <FieldLabel htmlFor="tracking-pixel-id">Tracking pixel ID</FieldLabel>
-          <InputGroup>
-            <InputGroupAddon>
-              <Select value={pixelProvider} onValueChange={setPixelProvider}>
-                <SelectTrigger
-                  size="sm"
-                  className="h-auto border-0 bg-transparent py-0 pr-1 pl-0 shadow-none dark:bg-transparent"
-                  aria-label="Tracking pixel provider"
-                >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PIXEL_PROVIDERS.map((provider) => (
-                    <SelectItem key={provider.value} value={provider.value}>
-                      {provider.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </InputGroupAddon>
-            <InputGroupInput
-              id="tracking-pixel-id"
-              value={pixelId}
-              autoComplete="off"
-              spellCheck={false}
-              placeholder="Pixel ID"
-              onChange={(event) => setPixelId(event.target.value)}
-            />
-          </InputGroup>
-        </Field>
+        <TrackingPixelField
+          idPrefix="page-pixel"
+          values={settings.pixel}
+          onChange={(pixel) => update({ pixel })}
+          description={pixelHint}
+        />
 
         <div className="flex items-center gap-3">
           <Button asChild variant="outline">

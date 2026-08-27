@@ -1,0 +1,141 @@
+export type Student = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  address: string;
+};
+
+const FIRST_NAMES = [
+  "Ava",
+  "Liam",
+  "Mia",
+  "Noah",
+  "Sofia",
+  "Ethan",
+  "Isla",
+  "Caleb",
+  "Zoe",
+  "Mason",
+  "Chloe",
+  "Owen",
+  "Layla",
+  "Jack",
+  "Nora",
+  "Leo",
+  "Aria",
+  "Henry",
+  "Ruby",
+  "James",
+  "Elena",
+  "Luca",
+  "Hazel",
+  "Theo",
+  "Maya",
+  "Ezra",
+  "Willow",
+  "Asher",
+  "Ivy",
+  "Miles",
+  "Camila",
+  "Felix",
+  "Quinn",
+  "Adrian",
+  "Sage",
+  "Julian",
+  "Piper",
+  "Nolan",
+  "Vera",
+  "Kai",
+  "Naomi",
+  "Elliot",
+  "Sienna",
+  "Rowan",
+  "Freya",
+  "Marcus",
+  "Lila",
+  "Bennett",
+  "Amara",
+  "Hugo",
+];
+
+const LAST_NAMES = [
+  "Reyes",
+  "Nguyen",
+  "Patel",
+  "Brooks",
+  "Garcia",
+  "Chen",
+  "Walker",
+  "Khan",
+  "Foster",
+  "Ramirez",
+  "Hughes",
+  "Kim",
+  "Bennett",
+  "Ortiz",
+  "Coleman",
+  "Singh",
+  "Hayes",
+  "Morales",
+  "Diaz",
+  "Walsh",
+  "Tran",
+  "Powell",
+  "Flores",
+  "Reed",
+  "Santos",
+  "Murray",
+  "Castillo",
+  "Price",
+  "Jimenez",
+  "West",
+  "Ibrahim",
+  "Lane",
+  "Vargas",
+  "Stone",
+  "Ali",
+  "Parker",
+  "Cruz",
+  "Grant",
+  "Shah",
+  "Bishop",
+  "Navarro",
+  "Owens",
+  "Keller",
+  "Ramos",
+  "Hart",
+  "Vega",
+  "Douglas",
+  "Mehta",
+  "Blair",
+  "Zhou",
+];
+
+const STREETS = [
+  "Oak Street",
+  "Barton Springs Rd",
+  "South Congress Ave",
+  "N Lamar Blvd",
+  "Guadalupe Street",
+  "E Riverside Dr",
+  "E Cesar Chavez St",
+  "Manor Rd",
+  "Airport Blvd",
+  "Burnet Rd",
+];
+
+export const TOTAL_FUNDS_CENTS = 12_745_000;
+export const CONNECTED_PAGE_COUNT = 3;
+
+export const MOCK_STUDENTS: Student[] = FIRST_NAMES.map((firstName, index) => {
+  const number = 100 + index * 17;
+  const street = STREETS[index % STREETS.length];
+  const zip = 78701 + (index % 12);
+
+  return {
+    id: `student-${index + 1}`,
+    firstName,
+    lastName: LAST_NAMES[index],
+    address: `${number} ${street}, Austin, TX ${zip}`,
+  };
+});
