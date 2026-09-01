@@ -17,7 +17,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
-export const MOCK_VERIFICATION_CODE = "1234";
+export const MOCK_VERIFICATION_CODE = "123456";
 
 export function VerifyEmailForm({
   email,
@@ -37,7 +37,7 @@ export function VerifyEmailForm({
       onSubmit={(event) => {
         event.preventDefault();
         if (code.trim() !== MOCK_VERIFICATION_CODE) {
-          setError("Enter the 4-digit code we sent you.");
+          setError("Enter the 6-digit code we sent you.");
           setStatus("idle");
           return;
         }
@@ -62,7 +62,7 @@ export function VerifyEmailForm({
           </FieldLabel>
           <InputOTP
             id="verification-code"
-            maxLength={4}
+            maxLength={6}
             value={code}
             onChange={(value) => {
               setCode(value);
@@ -81,6 +81,8 @@ export function VerifyEmailForm({
               <InputOTPSlot index={1} />
               <InputOTPSlot index={2} />
               <InputOTPSlot index={3} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={5} />
             </InputOTPGroup>
           </InputOTP>
           <FieldError>{error}</FieldError>

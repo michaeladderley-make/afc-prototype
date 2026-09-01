@@ -273,9 +273,14 @@ export function DonationFormElement({ className }: { className?: string }) {
           Add Comment
         </button>
 
-        <Button type="button" className="w-full">
-          Donate and Support
-        </Button>
+        <div className="flex flex-col gap-1">
+          <Button type="button" className="w-full">
+            Donate and Support
+          </Button>
+          <p className="text-center text-xs tracking-[0.12px] text-muted-foreground">
+            By donating, I agree to share my data
+          </p>
+        </div>
       </div>
 
       <Dialog

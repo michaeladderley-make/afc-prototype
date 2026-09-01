@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { FaqsLink } from "@/components/faqs/faqs-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -67,18 +68,21 @@ export function PartnerHeader({
             </Button>
           </nav>
         </div>
-        <div className="flex items-center gap-3">
-          {showDraftBadge ? (
-            <Badge
-              variant="secondary"
-              className="h-auto rounded-[4px] border border-border px-3 py-1 text-xs font-normal tracking-[0.12px]"
-            >
-              Draft
-            </Badge>
-          ) : null}
-          <p className="text-sm tracking-[0.07px] text-muted-foreground">
-            {userName} · {schoolName}
-          </p>
+        <div className="flex items-center gap-6">
+          <FaqsLink query={query} />
+          <div className="flex items-center gap-3">
+            {showDraftBadge ? (
+              <Badge
+                variant="secondary"
+                className="h-auto rounded-[4px] border border-border px-3 py-1 text-xs font-normal tracking-[0.12px]"
+              >
+                Draft
+              </Badge>
+            ) : null}
+            <p className="text-sm tracking-[0.07px] text-muted-foreground">
+              {userName} · {schoolName}
+            </p>
+          </div>
         </div>
       </header>
       <Separator />

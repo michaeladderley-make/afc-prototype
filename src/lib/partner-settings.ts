@@ -1,7 +1,6 @@
 import type { PartnerContext } from "@/lib/partner-context";
 
 export const PIXEL_PROVIDERS = [
-  { value: "gtm", label: "GTM" },
   { value: "ga4", label: "GA4" },
   { value: "meta", label: "Meta" },
   { value: "microsoft-uet", label: "Microsoft UET" },
@@ -25,7 +24,6 @@ type LegacyPixelSettings = {
 
 export function emptyPixelSettings(): PixelSettings {
   return {
-    gtm: "",
     ga4: "",
     meta: "",
     "microsoft-uet": "",

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { FaqsLink } from "@/components/faqs/faqs-link";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -23,25 +24,28 @@ export function PublicHeader() {
         >
           AFC
         </Link>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="ghost"
-              className="h-auto px-0 text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-foreground"
-            >
-              Need help?
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="rounded-[4px]">
-            <PopoverHeader>
-              <PopoverTitle>We’re here to help</PopoverTitle>
-              <PopoverDescription>
-                If you need help completing this process, please reach out to
-                support at afc.com.
-              </PopoverDescription>
-            </PopoverHeader>
-          </PopoverContent>
-        </Popover>
+        <div className="flex items-center gap-6">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                className="h-auto px-0 text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-foreground"
+              >
+                Need help?
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="rounded-[4px]">
+              <PopoverHeader>
+                <PopoverTitle>We’re here to help</PopoverTitle>
+                <PopoverDescription>
+                  If you need help completing this process, please reach out to
+                  support at afc.com.
+                </PopoverDescription>
+              </PopoverHeader>
+            </PopoverContent>
+          </Popover>
+          <FaqsLink />
+        </div>
       </header>
       <Separator />
     </div>
