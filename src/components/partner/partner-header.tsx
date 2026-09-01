@@ -12,12 +12,14 @@ export function PartnerHeader({
   query,
   activeNav,
   showDraftBadge = true,
+  outOfSow = false,
 }: {
   userName: string;
   schoolName: string;
   query: string;
   activeNav?: "profile" | "pages" | "allocation";
   showDraftBadge?: boolean;
+  outOfSow?: boolean;
 }) {
   return (
     <div>
@@ -85,6 +87,14 @@ export function PartnerHeader({
           </div>
         </div>
       </header>
+      {outOfSow ? (
+        <div className="border-t border-border bg-muted px-5 py-2">
+          <p className="text-center text-xs tracking-[0.12px] text-muted-foreground">
+            This page is not in the current SOW. It is included in the
+            prototype only and will not be part of the first release.
+          </p>
+        </div>
+      ) : null}
       <Separator />
     </div>
   );

@@ -43,6 +43,7 @@ export default async function AllocationPage({
         query={partnerQuery(context)}
         activeNav="allocation"
         showDraftBadge={false}
+        outOfSow
       />
       <main className="flex w-full justify-center px-16 pt-24 pb-16">
         <AllocationBoard />
