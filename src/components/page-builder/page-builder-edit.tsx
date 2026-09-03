@@ -312,6 +312,7 @@ export function PageBuilderEdit({
         </section>
 
         <DonationGoalSection compact={isMobile} />
+        <SharePageSection schoolId={school.id} compact={isMobile} />
         <HowItWorksSection schoolName={school.name} compact={isMobile} />
         <CreditSection compact={isMobile} />
 
@@ -350,7 +351,6 @@ export function PageBuilderEdit({
 
         <ImpactSection compact={isMobile} />
         <FaqAndCaptureSection schoolName={school.name} compact={isMobile} />
-        <SharePageSection schoolId={school.id} compact={isMobile} />
         <ClosingSection schoolName={school.name} compact={isMobile} />
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { Check, Copy } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,54 +20,56 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Empty,
-  EmptyContent,
-  EmptyTitle,
-} from "@/components/ui/empty";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { MOCK_PAGES, type PartnerPage } from "@/lib/mock-pages";
+import { type PartnerPage } from "@/lib/mock-pages";
+import { pageShareUrl, pageUrlLabel, uniqueSlug } from "@/lib/page-urls";
 import { partnerQuery, type PartnerContext } from "@/lib/partner-context";
-import { cn } from "@/lib/utils";
+import { usePartnerPages } from "@/lib/use-partner-pages";
 
-function PlaceholderSlot({
-  label,
-  className,
-}: {
-  label: string;
-  className?: string;
-}) {
-  return (
-    <Empty
-      className={cn(
-        "flex-none flex-col gap-2 rounded-[4px] border border-dashed border-muted-foreground bg-muted p-3",
-        className,
-      )}
-    >
-      <EmptyTitle className="text-xs font-medium tracking-normal text-muted-foreground">
-        {label}
-      </EmptyTitle>
-      <EmptyContent className="w-auto max-w-none">
-        <Button type="button" variant="outline" size="sm">
-          Change
-        </Button>
-      </EmptyContent>
-    </Empty>
-  );
+// Used when the Clipboard API is unavailable or the browser blocks it.
+function copyWithSelection(text: string) {
+  const field = document.createElement("textarea");
+  field.value = text;
+  field.setAttribute("readonly", "");
+  field.style.position = "fixed";
+  field.style.opacity = "0";
+  document.body.append(field);
+  field.select();
+  const copied = document.execCommand("copy");
+  field.remove();
+  return copied;
 }
 
 export function MyPages({ context }: { context: PartnerContext }) {
-  const [pages, setPages] = useState(MOCK_PAGES);
+  const { pages, setPages } = usePartnerPages();
   const [deleteTarget, setDeleteTarget] = useState<PartnerPage | null>(null);
   const [duplicateTarget, setDuplicateTarget] = useState<PartnerPage | null>(
     null,
   );
   const [duplicateTitle, setDuplicateTitle] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const pendingActionRef = useRef<"duplicate" | "delete" | null>(null);
   const pendingPageRef = useRef<PartnerPage | null>(null);
+  const copiedTimerRef = useRef<number | null>(null);
   const canDuplicate = duplicateTitle.trim().length > 0;
+
+  async function copyUrl(page: PartnerPage) {
+    const url = pageShareUrl(page);
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      if (!copyWithSelection(url)) {
+        return;
+      }
+    }
+    if (copiedTimerRef.current !== null) {
+      window.clearTimeout(copiedTimerRef.current);
+    }
+    setCopiedId(page.id);
+    copiedTimerRef.current = window.setTimeout(() => setCopiedId(null), 2000);
+  }
 
   function openDuplicate(page: PartnerPage) {
     setDuplicateTitle(`${page.name} copy`);
@@ -77,9 +80,7 @@ export function MyPages({ context }: { context: PartnerContext }) {
     if (!deleteTarget) {
       return;
     }
-    setPages((current) =>
-      current.filter((page) => page.id !== deleteTarget.id),
-    );
+    setPages(pages.filter((page) => page.id !== deleteTarget.id));
     setDeleteTarget(null);
   }
 
@@ -87,23 +88,23 @@ export function MyPages({ context }: { context: PartnerContext }) {
     if (!duplicateTarget || !canDuplicate) {
       return;
     }
+    const name = duplicateTitle.trim();
     const nextPage: PartnerPage = {
       ...duplicateTarget,
       id: `${duplicateTarget.id}-copy-${Date.now()}`,
-      name: duplicateTitle.trim(),
+      name,
+      slug: uniqueSlug(
+        name,
+        pages.map((page) => page.slug),
+      ),
       status: "Draft",
     };
-    setPages((current) => {
-      const index = current.findIndex((page) => page.id === duplicateTarget.id);
-      if (index === -1) {
-        return [...current, nextPage];
-      }
-      return [
-        ...current.slice(0, index + 1),
-        nextPage,
-        ...current.slice(index + 1),
-      ];
-    });
+    const index = pages.findIndex((page) => page.id === duplicateTarget.id);
+    setPages(
+      index === -1
+        ? [...pages, nextPage]
+        : [...pages.slice(0, index + 1), nextPage, ...pages.slice(index + 1)],
+    );
     setDuplicateTarget(null);
   }
 
@@ -154,6 +155,16 @@ export function MyPages({ context }: { context: PartnerContext }) {
               </div>
             </div>
             <div className="flex shrink-0 items-center gap-3">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                title={`Copy ${pageUrlLabel(page)}`}
+                aria-label={`Copy ${pageUrlLabel(page)} for ${page.name}`}
+                onClick={() => copyUrl(page)}
+              >
+                {copiedId === page.id ? <Check /> : <Copy />}
+              </Button>
               {editHref ? (
                 <Button asChild variant="outline">
                   <Link href={editHref}>Edit</Link>
@@ -268,23 +279,18 @@ export function MyPages({ context }: { context: PartnerContext }) {
           <DialogHeader>
             <DialogTitle>Duplicate this page</DialogTitle>
             <DialogDescription>
-              Change the logo, cover image, and title for the new page.
+              Name the new page. Everything else copies from this page and can
+              be changed later.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-3">
-              <PlaceholderSlot label="School Logo" className="min-h-[120px]" />
-              <PlaceholderSlot label="Cover Image" className="min-h-[120px]" />
-            </div>
-            <Field className="gap-2">
-              <FieldLabel htmlFor="duplicate-title">Page title</FieldLabel>
-              <Input
-                id="duplicate-title"
-                value={duplicateTitle}
-                onChange={(event) => setDuplicateTitle(event.target.value)}
-              />
-            </Field>
-          </div>
+          <Field className="gap-2">
+            <FieldLabel htmlFor="duplicate-title">Page name</FieldLabel>
+            <Input
+              id="duplicate-title"
+              value={duplicateTitle}
+              onChange={(event) => setDuplicateTitle(event.target.value)}
+            />
+          </Field>
           <DialogFooter className="flex-row items-center justify-end gap-3 sm:justify-end">
             <Button
               type="button"

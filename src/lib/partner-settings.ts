@@ -280,6 +280,30 @@ export function isPixelOverridden(override: PageDefaultsOverride) {
   return Boolean(override.pixel && Object.keys(override.pixel).length > 0);
 }
 
+export function hasAnyPixelId(pixel: PixelSettings) {
+  return PIXEL_PROVIDERS.some(
+    (provider) => pixel[provider.value].trim().length > 0,
+  );
+}
+
+export function clearPagePixelOverride(pageId: string) {
+  const { pixel, ...rest } = getPageOverride(pageId);
+  if (!pixel) {
+    return;
+  }
+  window.localStorage.setItem(pageKey(pageId), JSON.stringify(rest));
+  notify();
+}
+
+export function establishGlobalPixels(
+  context: PartnerContext,
+  pageId: string,
+  pixel: PixelSettings,
+) {
+  patchGlobalDefaults(context, { pixel });
+  clearPagePixelOverride(pageId);
+}
+
 export function isLogoOverridden(override: PageDefaultsOverride) {
   return Boolean(override.logo && Object.keys(override.logo).length > 0);
 }

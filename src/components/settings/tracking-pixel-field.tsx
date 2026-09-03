@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldDescription,
@@ -20,11 +21,17 @@ export function TrackingPixelField({
   values,
   onChange,
   description,
+  inherited = false,
+  onCustomize,
+  onReset,
 }: {
   idPrefix: string;
   values?: PixelSettings;
   onChange: (pixel: Partial<PixelSettings>) => void;
   description?: string;
+  inherited?: boolean;
+  onCustomize?: () => void;
+  onReset?: () => void;
 }) {
   const pixel = values ?? emptyPixelSettings();
   return (
@@ -42,6 +49,7 @@ export function TrackingPixelField({
                 autoComplete="off"
                 spellCheck={false}
                 placeholder="Pixel ID"
+                disabled={inherited}
                 onChange={(event) =>
                   onChange({
                     [provider.value]: event.target.value,
@@ -52,6 +60,28 @@ export function TrackingPixelField({
           );
         })}
         {description ? <FieldDescription>{description}</FieldDescription> : null}
+        {inherited && onCustomize ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="self-start"
+            onClick={onCustomize}
+          >
+            Use different IDs for this page
+          </Button>
+        ) : null}
+        {!inherited && onReset ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="self-start"
+            onClick={onReset}
+          >
+            Use global IDs
+          </Button>
+        ) : null}
       </FieldGroup>
     </FieldSet>
   );

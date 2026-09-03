@@ -1,31 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import type { PartnerContext } from "@/lib/partner-context";
 import {
   defaultsFromContext,
+  EMPTY_OVERRIDE,
   getGlobalDefaults,
   getPageOverride,
   getResolvedPageDefaults,
   patchGlobalDefaults,
   patchPageDefaults,
   subscribePageDefaults,
-  type PageDefaults,
   type PageDefaultsOverride,
 } from "@/lib/partner-settings";
 
 export function useGlobalDefaults(context: PartnerContext) {
-  const [settings, setSettings] = useState<PageDefaults>(() =>
-    defaultsFromContext(context),
+  const settings = useSyncExternalStore(
+    subscribePageDefaults,
+    () => getGlobalDefaults(context),
+    () => defaultsFromContext(context),
   );
-
-  useEffect(() => {
-    setSettings(getGlobalDefaults(context));
-    return subscribePageDefaults(() => {
-      setSettings(getGlobalDefaults(context));
-    });
-  }, [context]);
 
   function update(patch: PageDefaultsOverride) {
     patchGlobalDefaults(context, patch);
@@ -35,23 +30,25 @@ export function useGlobalDefaults(context: PartnerContext) {
 }
 
 export function usePageDefaults(context: PartnerContext, pageId: string) {
-  const [settings, setSettings] = useState<PageDefaults>(() =>
-    defaultsFromContext(context),
+  const settings = useSyncExternalStore(
+    subscribePageDefaults,
+    () => getResolvedPageDefaults(context, pageId),
+    () => defaultsFromContext(context),
   );
-  const [override, setOverride] = useState<PageDefaultsOverride>({});
-
-  useEffect(() => {
-    setSettings(getResolvedPageDefaults(context, pageId));
-    setOverride(getPageOverride(pageId));
-    return subscribePageDefaults(() => {
-      setSettings(getResolvedPageDefaults(context, pageId));
-      setOverride(getPageOverride(pageId));
-    });
-  }, [context, pageId]);
+  const globalSettings = useSyncExternalStore(
+    subscribePageDefaults,
+    () => getGlobalDefaults(context),
+    () => defaultsFromContext(context),
+  );
+  const override = useSyncExternalStore(
+    subscribePageDefaults,
+    () => getPageOverride(pageId),
+    () => EMPTY_OVERRIDE,
+  );
 
   function update(patch: PageDefaultsOverride) {
     patchPageDefaults(pageId, patch);
   }
 
-  return { settings, override, update };
+  return { settings, globalSettings, override, update };
 }

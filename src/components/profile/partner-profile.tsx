@@ -183,6 +183,7 @@ export function PartnerProfile({ context }: { context: PartnerContext }) {
               idPrefix="profile-pixel"
               values={settings.pixel}
               onChange={(pixel) => update({ pixel })}
+              description="New pages inherit these IDs. A page only differs if you change it on that page."
             />
           </FieldGroup>
         </FieldSet>

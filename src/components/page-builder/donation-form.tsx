@@ -16,6 +16,7 @@ import {
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
@@ -26,6 +27,9 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_AMOUNTS = [40, 100, 200, 1000, 2500, 5000];
+const MAX_ENABLED_CADENCES = 2;
+const CADENCE_LIMIT_MESSAGE =
+  "Only two cadences can be on at a time. Turn one off before turning another on.";
 
 const CADENCES = [
   { value: "one-time", label: "One time" },
@@ -50,7 +54,7 @@ type CadenceMap<T> = Record<Cadence, T>;
 function defaultSettings(): CadenceMap<CadenceSettings> {
   return {
     "one-time": { enabled: true, amounts: [...DEFAULT_AMOUNTS] },
-    weekly: { enabled: true, amounts: [...DEFAULT_AMOUNTS] },
+    weekly: { enabled: false, amounts: [...DEFAULT_AMOUNTS] },
     monthly: { enabled: true, amounts: [...DEFAULT_AMOUNTS] },
   };
 }
@@ -99,6 +103,9 @@ export function DonationFormElement({ className }: { className?: string }) {
   const [dedicate, setDedicate] = useState(false);
   const [manageOpen, setManageOpen] = useState(false);
   const [draft, setDraft] = useState(() => toDraft(defaultSettings()));
+  const [cadenceLimitNotice, setCadenceLimitNotice] = useState<string | null>(
+    null,
+  );
 
   const enabledCadences = CADENCES.filter(
     (cadence) => cadences[cadence.value].enabled,
@@ -112,9 +119,32 @@ export function DonationFormElement({ className }: { className?: string }) {
   const enabledDrafts = parsedDraft.filter((cadence) => cadence.enabled);
   const canSave =
     enabledDrafts.length > 0 &&
+    enabledDrafts.length <= MAX_ENABLED_CADENCES &&
     enabledDrafts.every((cadence) =>
       amountsAreValid(draft[cadence.value].amounts),
     );
+  const atCadenceLimit = enabledDrafts.length >= MAX_ENABLED_CADENCES;
+
+  function setCadenceEnabled(cadence: Cadence, enabled: boolean) {
+    if (enabled && !draft[cadence].enabled && atCadenceLimit) {
+      setCadenceLimitNotice(CADENCE_LIMIT_MESSAGE);
+      return;
+    }
+
+    setCadenceLimitNotice(null);
+    setDraft((current) => ({
+      ...current,
+      [cadence]: {
+        ...current[cadence],
+        enabled,
+      },
+    }));
+  }
+
+  function closeManage() {
+    setManageOpen(false);
+    setCadenceLimitNotice(null);
+  }
 
   function selectAmount(nextAmount: number) {
     setAmount(nextAmount);
@@ -131,6 +161,7 @@ export function DonationFormElement({ className }: { className?: string }) {
 
   function openManage() {
     setDraft(toDraft(cadences));
+    setCadenceLimitNotice(null);
     setManageOpen(true);
   }
 
@@ -165,7 +196,7 @@ export function DonationFormElement({ className }: { className?: string }) {
     if (!nextAmounts.includes(amount)) {
       selectAmount(nextAmounts[0]);
     }
-    setManageOpen(false);
+    closeManage();
   }
 
   return (
@@ -189,11 +220,7 @@ export function DonationFormElement({ className }: { className?: string }) {
           <div
             className={cn(
               "grid gap-2",
-              enabledCadences.length === 1
-                ? "grid-cols-1"
-                : enabledCadences.length === 3
-                  ? "grid-cols-3"
-                  : "grid-cols-2",
+              enabledCadences.length === 1 ? "grid-cols-1" : "grid-cols-2",
             )}
           >
             {enabledCadences.map((cadence) => (
@@ -286,10 +313,11 @@ export function DonationFormElement({ className }: { className?: string }) {
       <Dialog
         open={manageOpen}
         onOpenChange={(open) => {
-          setManageOpen(open);
           if (open) {
-            setDraft(toDraft(cadences));
+            openManage();
+            return;
           }
+          closeManage();
         }}
       >
         <DialogContent className="rounded-[4px] sm:max-w-lg">
@@ -297,10 +325,17 @@ export function DonationFormElement({ className }: { className?: string }) {
             <DialogTitle>Manage widget</DialogTitle>
             <DialogDescription>
               Choose which donation cadences appear and set suggested amounts
-              for each one that is on.
+              for each one that is on. Up to two cadences can be on at a time.
             </DialogDescription>
           </DialogHeader>
           <FieldGroup className="max-h-[min(60vh,520px)] gap-5 overflow-y-auto pr-1">
+            {cadenceLimitNotice ? (
+              <FieldError>{cadenceLimitNotice}</FieldError>
+            ) : atCadenceLimit ? (
+              <FieldDescription>
+                Two cadences are on. Turn one off before turning another on.
+              </FieldDescription>
+            ) : null}
             {CADENCES.map((cadence, index) => {
               const settings = draft[cadence.value];
               const switchId = `show-${cadence.value}`;
@@ -314,14 +349,11 @@ export function DonationFormElement({ className }: { className?: string }) {
                     <Switch
                       id={switchId}
                       checked={settings.enabled}
+                      aria-invalid={
+                        Boolean(cadenceLimitNotice) && !settings.enabled
+                      }
                       onCheckedChange={(checked) =>
-                        setDraft((current) => ({
-                          ...current,
-                          [cadence.value]: {
-                            ...current[cadence.value],
-                            enabled: checked === true,
-                          },
-                        }))
+                        setCadenceEnabled(cadence.value, checked === true)
                       }
                     />
                   </Field>
@@ -379,7 +411,7 @@ export function DonationFormElement({ className }: { className?: string }) {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setManageOpen(false)}
+              onClick={closeManage}
             >
               Cancel
             </Button>

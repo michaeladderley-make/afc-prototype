@@ -19,14 +19,16 @@ import {
   InputGroupText,
 } from "@/components/ui/input-group";
 import type { School } from "@/lib/mock-schools";
+import { PAGE_URL_BASE } from "@/lib/page-urls";
 import type { PartnerContext } from "@/lib/partner-context";
 import {
+  clearPagePixelOverride,
+  establishGlobalPixels,
+  hasAnyPixelId,
   isContactOverridden,
   isPixelOverridden,
 } from "@/lib/partner-settings";
 import { usePageDefaults } from "@/lib/use-partner-settings";
-
-const PAGE_URL_BASE = "donations.afc.com/";
 
 function sanitizePath(value: string) {
   return value.replace(/^\/*/, "").replace(/\s+/g, "-");
@@ -42,20 +44,53 @@ export function PublishSettings({
   query: string;
 }) {
   const [path, setPath] = useState(school.id);
-  const { settings, override, update } = usePageDefaults(context, school.id);
+  const [publishState, setPublishState] = useState<
+    "idle" | "published" | "globals-saved"
+  >("idle");
+  const { settings, globalSettings, override, update } = usePageDefaults(
+    context,
+    school.id,
+  );
   const canPublish = path.trim().length > 0;
   const contactHint = isContactOverridden(override)
     ? "Custom for this page. Profile still holds the default."
     : "Default from Profile. Edits apply to this page only.";
-  const pixelHint = isPixelOverridden(override)
-    ? "Custom for this page. Profile still holds the default."
-    : "Default from Profile. Edits apply to this page only.";
+  const hasGlobalPixels = hasAnyPixelId(globalSettings.pixel);
+  const pixelInherited = hasGlobalPixels && !isPixelOverridden(override);
+  const pixelHint = pixelInherited
+    ? "Inherited from your global tracking settings. Change these only if this page needs different IDs."
+    : hasGlobalPixels
+      ? "Custom for this page. Your global tracking settings stay as they are."
+      : "These become your global tracking settings when you publish, and every new page will start from them.";
+
+  function customizePixels() {
+    setPublishState("idle");
+    update({ pixel: settings.pixel });
+  }
+
+  function resetPixels() {
+    setPublishState("idle");
+    clearPagePixelOverride(school.id);
+  }
+
+  function publish() {
+    if (!canPublish) {
+      return;
+    }
+    if (!hasGlobalPixels && hasAnyPixelId(settings.pixel)) {
+      establishGlobalPixels(context, school.id, settings.pixel);
+      setPublishState("globals-saved");
+      return;
+    }
+    setPublishState("published");
+  }
 
   return (
     <form
       className="flex w-full max-w-[640px] flex-col items-start gap-5"
       onSubmit={(event) => {
         event.preventDefault();
+        publish();
       }}
     >
       <h1 className="text-[28px] leading-[34px] font-medium tracking-[0.42px] text-foreground">
@@ -148,15 +183,28 @@ export function PublishSettings({
           values={settings.pixel}
           onChange={(pixel) => update({ pixel })}
           description={pixelHint}
+          inherited={pixelInherited}
+          onCustomize={customizePixels}
+          onReset={hasGlobalPixels ? resetPixels : undefined}
         />
 
-        <div className="flex items-center gap-3">
-          <Button asChild variant="outline">
-            <Link href={`/page-builder?${query}`}>Edit page</Link>
-          </Button>
-          <Button type="submit" disabled={!canPublish}>
-            Publish
-          </Button>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-3">
+            <Button asChild variant="outline">
+              <Link href={`/page-builder?${query}`}>Edit page</Link>
+            </Button>
+            <Button type="submit" disabled={!canPublish}>
+              Publish
+            </Button>
+          </div>
+          {publishState === "globals-saved" ? (
+            <FieldDescription>
+              Published. These tracking pixel IDs are now your global settings,
+              so every new page starts from them.
+            </FieldDescription>
+          ) : publishState === "published" ? (
+            <FieldDescription>Published.</FieldDescription>
+          ) : null}
         </div>
       </FieldGroup>
     </form>
