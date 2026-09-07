@@ -168,7 +168,7 @@ export function isPendingInvitee(email: string, school: string) {
 
 export function partnershipAgreementHref(
   query: string,
-  from: "profile" | "page-builder" | "publish" | "signup",
+  from: "profile" | "page-builder" | "publish",
 ) {
   return `/partnership-agreement?${query}&from=${from}`;
 }

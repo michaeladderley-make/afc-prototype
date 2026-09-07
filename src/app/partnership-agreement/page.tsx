@@ -43,13 +43,11 @@ export default async function PartnershipAgreementPage({
   };
   const query = partnerQuery(context);
   const returnHref =
-    from === "signup"
-      ? `/page-builder?${query}&welcome=1`
-      : from === "page-builder"
-        ? `/page-builder?${query}`
-        : from === "publish"
-          ? `/publish?${query}`
-          : `/profile?${query}`;
+    from === "page-builder"
+      ? `/page-builder?${query}`
+      : from === "publish"
+        ? `/publish?${query}`
+        : `/profile?${query}`;
 
   return (
     <div className="flex min-h-full flex-col bg-background">
