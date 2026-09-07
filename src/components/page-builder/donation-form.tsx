@@ -95,7 +95,15 @@ function amountsAreValid(amounts: string[]) {
   });
 }
 
-export function DonationFormElement({ className }: { className?: string }) {
+export function DonationFormElement({
+  className,
+  publicView = false,
+  schoolName,
+}: {
+  className?: string;
+  publicView?: boolean;
+  schoolName: string;
+}) {
   const [cadences, setCadences] = useState(defaultSettings);
   const [frequency, setFrequency] = useState<Cadence>("one-time");
   const [amount, setAmount] = useState(DEFAULT_AMOUNTS[0]);
@@ -105,6 +113,9 @@ export function DonationFormElement({ className }: { className?: string }) {
   const [draft, setDraft] = useState(() => toDraft(defaultSettings()));
   const [cadenceLimitNotice, setCadenceLimitNotice] = useState<string | null>(
     null,
+  );
+  const [giftState, setGiftState] = useState<"idle" | "confirm" | "complete">(
+    "idle",
   );
 
   const enabledCadences = CADENCES.filter(
@@ -124,6 +135,10 @@ export function DonationFormElement({ className }: { className?: string }) {
       amountsAreValid(draft[cadence.value].amounts),
     );
   const atCadenceLimit = enabledDrafts.length >= MAX_ENABLED_CADENCES;
+  const giftAmount = parseAmount(customAmount);
+  const canDonate = giftAmount !== null && giftAmount > 0;
+  const selectedCadence =
+    CADENCES.find((cadence) => cadence.value === frequency)?.label ?? "One time";
 
   function setCadenceEnabled(cadence: Cadence, enabled: boolean) {
     if (enabled && !draft[cadence].enabled && atCadenceLimit) {
@@ -206,15 +221,17 @@ export function DonationFormElement({ className }: { className?: string }) {
         className,
       )}
     >
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className="self-end"
-        onClick={openManage}
-      >
-        Manage widget
-      </Button>
+      {publicView ? null : (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="self-end"
+          onClick={openManage}
+        >
+          Manage widget
+        </Button>
+      )}
       <div className="flex flex-col gap-4 rounded-xl border border-border bg-background p-4 text-foreground">
         {enabledCadences.length > 0 ? (
           <div
@@ -301,7 +318,17 @@ export function DonationFormElement({ className }: { className?: string }) {
         </button>
 
         <div className="flex flex-col gap-1">
-          <Button type="button" className="w-full">
+          <Button
+            type="button"
+            className="w-full"
+            disabled={!canDonate}
+            onClick={() => {
+              if (!canDonate) {
+                return;
+              }
+              setGiftState("confirm");
+            }}
+          >
             Donate and Support
           </Button>
           <p className="text-center text-xs tracking-[0.12px] text-muted-foreground">
@@ -419,6 +446,58 @@ export function DonationFormElement({ className }: { className?: string }) {
               Save
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={giftState !== "idle"}
+        onOpenChange={(open) => {
+          if (!open) {
+            setGiftState("idle");
+          }
+        }}
+      >
+        <DialogContent className="rounded-[4px] sm:max-w-md">
+          {giftState === "complete" ? (
+            <>
+              <DialogHeader>
+                <DialogTitle>Thank you</DialogTitle>
+                <DialogDescription>
+                  Your {selectedCadence.toLowerCase()} gift of $
+                  {formatAmount(giftAmount ?? 0)} to {schoolName} has been
+                  recorded for this prototype. No payment was taken.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button type="button" onClick={() => setGiftState("idle")}>
+                  Done
+                </Button>
+              </DialogFooter>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle>Confirm your gift</DialogTitle>
+                <DialogDescription>
+                  Give ${formatAmount(giftAmount ?? 0)}{" "}
+                  {selectedCadence.toLowerCase()} to {schoolName}? This is a
+                  prototype — no card or payment information is collected.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setGiftState("idle")}
+                >
+                  Cancel
+                </Button>
+                <Button type="button" onClick={() => setGiftState("complete")}>
+                  Confirm gift
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>

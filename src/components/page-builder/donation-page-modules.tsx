@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { ChevronDown, Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { copyText } from "@/lib/copy-text";
+import { publicDonationPath, publicDonationUrl } from "@/lib/page-urls";
 import { cn } from "@/lib/utils";
 
 export const DONATION_WIDGET_ID = "donation-widget";
@@ -54,7 +56,13 @@ function parseGoal(value: string) {
   return Number(digits);
 }
 
-export function DonationGoalSection({ compact = false }: { compact?: boolean }) {
+export function DonationGoalSection({
+  compact = false,
+  publicView = false,
+}: {
+  compact?: boolean;
+  publicView?: boolean;
+}) {
   const [visible, setVisible] = useState(true);
   const [goal, setGoal] = useState(DEFAULT_GOAL);
   const [draft, setDraft] = useState(String(DEFAULT_GOAL));
@@ -63,22 +71,28 @@ export function DonationGoalSection({ compact = false }: { compact?: boolean }) 
   const canSave = parsedDraft !== null && parsedDraft > 0;
   const percent = goal > 0 ? Math.min(100, (RAISED_SO_FAR / goal) * 100) : 0;
 
+  if (publicView && !visible) {
+    return null;
+  }
+
   return (
     <section className={sectionClass(compact)}>
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-[21px] leading-[28px] font-medium text-foreground">
           Donation Goal
         </h2>
-        <Field orientation="horizontal" className="w-auto shrink-0">
-          <FieldLabel htmlFor="show-donation-goal" className="text-sm font-normal">
-            Show
-          </FieldLabel>
-          <Switch
-            id="show-donation-goal"
-            checked={visible}
-            onCheckedChange={setVisible}
-          />
-        </Field>
+        {publicView ? null : (
+          <Field orientation="horizontal" className="w-auto shrink-0">
+            <FieldLabel htmlFor="show-donation-goal" className="text-sm font-normal">
+              Show
+            </FieldLabel>
+            <Switch
+              id="show-donation-goal"
+              checked={visible}
+              onCheckedChange={setVisible}
+            />
+          </Field>
+        )}
       </div>
       {visible ? (
         <>
@@ -93,17 +107,19 @@ export function DonationGoalSection({ compact = false }: { compact?: boolean }) 
               <p className="text-sm tracking-[0.07px] text-muted-foreground">
                 of {formatDollars(goal)} goal
               </p>
-              <button
-                type="button"
-                className="inline-flex size-5 items-center justify-center text-muted-foreground hover:text-foreground"
-                aria-label="Edit donation goal"
-                onClick={() => {
-                  setDraft(String(goal));
-                  setOpen(true);
-                }}
-              >
-                <Pencil className="size-3.5" />
-              </button>
+              {publicView ? null : (
+                <button
+                  type="button"
+                  className="inline-flex size-5 items-center justify-center text-muted-foreground hover:text-foreground"
+                  aria-label="Edit donation goal"
+                  onClick={() => {
+                    setDraft(String(goal));
+                    setOpen(true);
+                  }}
+                >
+                  <Pencil className="size-3.5" />
+                </button>
+              )}
             </div>
           </div>
           <Progress value={percent} className="h-2.5" />
@@ -416,24 +432,32 @@ export function FaqAndCaptureSection({
 }
 
 export function SharePageSection({
-  schoolId,
+  slug,
   compact = false,
+  publicView = false,
 }: {
-  schoolId: string;
+  slug: string;
   compact?: boolean;
+  publicView?: boolean;
 }) {
   const [visible, setVisible] = useState(true);
   const [copied, setCopied] = useState(false);
-  const shareUrl = `https://donations.afc.com/${schoolId}`;
+  const shareUrl = useSyncExternalStore(
+    () => () => {},
+    () => `${window.location.origin}${publicDonationPath(slug)}`,
+    () => publicDonationUrl(slug),
+  );
 
   async function copyLink() {
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      setCopied(false);
+    if (!(await copyText(shareUrl))) {
+      return;
     }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
+  }
+
+  if (publicView && !visible) {
+    return null;
   }
 
   return (
@@ -442,16 +466,18 @@ export function SharePageSection({
         <h2 className="text-[21px] leading-[28px] font-medium text-foreground">
           Share this donation page
         </h2>
-        <Field orientation="horizontal" className="w-auto shrink-0">
-          <FieldLabel htmlFor="show-share-page" className="text-sm font-normal">
-            Show
-          </FieldLabel>
-          <Switch
-            id="show-share-page"
-            checked={visible}
-            onCheckedChange={setVisible}
-          />
-        </Field>
+        {publicView ? null : (
+          <Field orientation="horizontal" className="w-auto shrink-0">
+            <FieldLabel htmlFor="show-share-page" className="text-sm font-normal">
+              Show
+            </FieldLabel>
+            <Switch
+              id="show-share-page"
+              checked={visible}
+              onCheckedChange={setVisible}
+            />
+          </Field>
+        )}
       </div>
       {visible ? (
         <>
@@ -517,6 +543,10 @@ export function ClosingSection({
 
 function EmailCaptureCard() {
   const [state, setState] = useState("TX");
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   return (
     <Card className="rounded-[4px] py-0 shadow-none">
@@ -529,45 +559,68 @@ function EmailCaptureCard() {
             We will tell you when the credit opens.
           </p>
         </div>
-        <form
-          className="flex flex-col gap-3"
-          onSubmit={(event) => {
-            event.preventDefault();
-          }}
-        >
-          <FieldGroup className="grid grid-cols-2 gap-3">
-            <Field className="col-span-2 gap-2">
-              <FieldLabel htmlFor="capture-email">Email</FieldLabel>
-              <Input id="capture-email" type="email" />
-            </Field>
-            <Field className="gap-2">
-              <FieldLabel htmlFor="capture-first">First name</FieldLabel>
-              <Input id="capture-first" />
-            </Field>
-            <Field className="gap-2">
-              <FieldLabel htmlFor="capture-last">Last name</FieldLabel>
-              <Input id="capture-last" />
-            </Field>
-            <Field className="col-span-2 gap-2">
-              <FieldLabel htmlFor="capture-state">State</FieldLabel>
-              <Select value={state} onValueChange={setState}>
-                <SelectTrigger id="capture-state" className="w-full">
-                  <SelectValue placeholder="State" />
-                </SelectTrigger>
-                <SelectContent>
-                  {STATE_OPTIONS.map((option) => (
-                    <SelectItem key={option} value={option}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-          </FieldGroup>
-          <Button type="submit" className="w-full">
-            Keep me informed
-          </Button>
-        </form>
+        {submitted ? (
+          <p className="text-sm tracking-[0.07px] text-foreground">
+            Your information has been submitted.
+          </p>
+        ) : (
+          <form
+            className="flex flex-col gap-3"
+            onSubmit={(event) => {
+              event.preventDefault();
+              setSubmitted(true);
+            }}
+          >
+            <FieldGroup className="grid grid-cols-2 gap-3">
+              <Field className="col-span-2 gap-2">
+                <FieldLabel htmlFor="capture-email">Email</FieldLabel>
+                <Input
+                  id="capture-email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                />
+              </Field>
+              <Field className="gap-2">
+                <FieldLabel htmlFor="capture-first">First name</FieldLabel>
+                <Input
+                  id="capture-first"
+                  required
+                  value={firstName}
+                  onChange={(event) => setFirstName(event.target.value)}
+                />
+              </Field>
+              <Field className="gap-2">
+                <FieldLabel htmlFor="capture-last">Last name</FieldLabel>
+                <Input
+                  id="capture-last"
+                  required
+                  value={lastName}
+                  onChange={(event) => setLastName(event.target.value)}
+                />
+              </Field>
+              <Field className="col-span-2 gap-2">
+                <FieldLabel htmlFor="capture-state">State</FieldLabel>
+                <Select value={state} onValueChange={setState}>
+                  <SelectTrigger id="capture-state" className="w-full">
+                    <SelectValue placeholder="State" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATE_OPTIONS.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+            </FieldGroup>
+            <Button type="submit" className="w-full">
+              Keep me informed
+            </Button>
+          </form>
+        )}
       </CardContent>
     </Card>
   );

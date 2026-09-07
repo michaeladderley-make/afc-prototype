@@ -60,10 +60,12 @@ function PlaceholderSlot({
   label,
   className,
   stacked = false,
+  readOnly = false,
 }: {
   label: string;
   className?: string;
   stacked?: boolean;
+  readOnly?: boolean;
 }) {
   return (
     <Empty
@@ -76,11 +78,13 @@ function PlaceholderSlot({
       <EmptyTitle className="text-xs font-medium tracking-normal text-muted-foreground">
         {label}
       </EmptyTitle>
-      <EmptyContent className="w-auto max-w-none">
-        <Button type="button" variant="outline" size="sm">
-          Change
-        </Button>
-      </EmptyContent>
+      {readOnly ? null : (
+        <EmptyContent className="w-auto max-w-none">
+          <Button type="button" variant="outline" size="sm">
+            Change
+          </Button>
+        </EmptyContent>
+      )}
     </Empty>
   );
 }
@@ -96,6 +100,7 @@ function CanvasTextEditor({
   sectionAlign = "start",
   className,
   rows = 3,
+  readOnly = false,
 }: {
   value: string;
   maxLength: number;
@@ -107,6 +112,7 @@ function CanvasTextEditor({
   sectionAlign?: "start" | "center";
   className?: string;
   rows?: number;
+  readOnly?: boolean;
 }) {
   const [text, setText] = useState(value);
   const [draft, setDraft] = useState(value);
@@ -115,6 +121,10 @@ function CanvasTextEditor({
   function openEditor() {
     setDraft(text);
     setOpen(true);
+  }
+
+  if (readOnly) {
+    return <p className={className}>{text}</p>;
   }
 
   return (
@@ -212,30 +222,39 @@ export function PageBuilderEdit({
   school,
   context,
   preview = "desktop",
+  publicView = false,
+  slug,
 }: {
   school: School;
   context: PartnerContext;
   preview?: PreviewMode;
+  publicView?: boolean;
+  slug?: string;
 }) {
-  const isMobile = preview === "mobile";
+  const isMobile = preview === "mobile" && !publicView;
   const place = schoolPlace(school.address);
   const { settings, update } = usePageDefaults(context, school.id);
+  const pageSlug = slug ?? school.id;
 
   return (
     <div
       className={cn(
         "flex min-h-0",
-        isMobile
-          ? "h-full items-stretch justify-center px-6 py-10"
-          : "flex-col items-center px-12 pt-10 pb-16",
+        publicView
+          ? "min-h-dvh w-full flex-col"
+          : isMobile
+            ? "h-full items-stretch justify-center px-6 py-10"
+            : "flex-col items-center px-12 pt-10 pb-16",
       )}
     >
       <div
         className={cn(
           "bg-background",
-          isMobile
-            ? "flex h-full w-full max-w-[390px] flex-col overflow-y-auto rounded-[28px] border border-border"
-            : "flex w-full max-w-[1000px] flex-col overflow-hidden rounded-[4px] border border-border",
+          publicView
+            ? "flex w-full flex-col"
+            : isMobile
+              ? "flex h-full w-full max-w-[390px] flex-col overflow-y-auto rounded-[28px] border border-border"
+              : "flex w-full max-w-[1000px] flex-col overflow-hidden rounded-[4px] border border-border",
         )}
       >
         <div
@@ -251,6 +270,7 @@ export function PageBuilderEdit({
           <LogoSlot
             added={settings.logo.added}
             stacked
+            readOnly={publicView}
             className="h-16 w-[148px] shrink-0"
             onChange={() => update({ logo: { added: true } })}
           />
@@ -281,6 +301,7 @@ export function PageBuilderEdit({
               fieldId="welcome-statement"
               fieldLabel="Welcome statement"
               sectionLabel="Welcome Statement"
+              readOnly={publicView}
               className={cn(
                 "text-left font-medium text-foreground",
                 isMobile
@@ -292,6 +313,7 @@ export function PageBuilderEdit({
               added={Boolean(settings.cover?.added)}
               emptyLabel="Cover Image"
               addedLabel="Cover photo added"
+              readOnly={publicView}
               className={
                 isMobile
                   ? "aspect-[2/1] min-h-[140px] w-full shrink-0"
@@ -306,13 +328,19 @@ export function PageBuilderEdit({
           </div>
           <div id={DONATION_WIDGET_ID} className="w-full min-w-0">
             <DonationFormElement
+              schoolName={school.name}
+              publicView={publicView}
               className={isMobile ? "w-full max-w-none" : "ml-auto"}
             />
           </div>
         </section>
 
-        <DonationGoalSection compact={isMobile} />
-        <SharePageSection schoolId={school.id} compact={isMobile} />
+        <DonationGoalSection compact={isMobile} publicView={publicView} />
+        <SharePageSection
+          slug={pageSlug}
+          compact={isMobile}
+          publicView={publicView}
+        />
         <HowItWorksSection schoolName={school.name} compact={isMobile} />
         <CreditSection compact={isMobile} />
 
@@ -335,12 +363,14 @@ export function PageBuilderEdit({
               fieldLabel="School story"
               sectionLabel="School Story"
               rows={6}
+              readOnly={publicView}
               className="text-left text-base leading-6 text-foreground"
             />
           </div>
           <PlaceholderSlot
             label="School Photo"
             stacked
+            readOnly={publicView}
             className={
               isMobile
                 ? "aspect-[4/3] min-h-[160px] w-full"

@@ -2,12 +2,30 @@ import type { PartnerPage } from "@/lib/mock-pages";
 
 export const PAGE_URL_BASE = "donations.afc.com/";
 
+export function publicDonationPath(slug: string) {
+  return `/d/${slug}`;
+}
+
+export function publicDonationUrl(slug: string) {
+  return `https://${PAGE_URL_BASE}${slug}`;
+}
+
+export function liveDonationUrl(slug: string) {
+  if (typeof window === "undefined") {
+    return publicDonationUrl(slug);
+  }
+  return `${window.location.origin}${publicDonationPath(slug)}`;
+}
+
 function pageUrl(page: PartnerPage) {
   const path = page.status === "Published" ? page.slug : `preview/${page.slug}`;
   return `${PAGE_URL_BASE}${path}`;
 }
 
 export function pageShareUrl(page: PartnerPage) {
+  if (page.status === "Published") {
+    return liveDonationUrl(page.slug);
+  }
   return `https://${pageUrl(page)}`;
 }
 

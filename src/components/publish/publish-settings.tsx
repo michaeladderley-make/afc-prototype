@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { PartnershipAgreementPrompt } from "@/components/partnership/partnership-agreement-prompt";
+import { PublishSuccess } from "@/components/publish/publish-success";
 import { TrackingPixelField } from "@/components/settings/tracking-pixel-field";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +31,7 @@ import {
   isContactOverridden,
   isPixelOverridden,
 } from "@/lib/partner-settings";
+import { usePartnerPages } from "@/lib/use-partner-pages";
 import { usePageDefaults } from "@/lib/use-partner-settings";
 
 function sanitizePath(value: string) {
@@ -54,6 +56,7 @@ export function PublishSettings({
     school.id,
   );
   const { signed } = usePartnershipAgreement(context.email, school.id);
+  const { publishPage } = usePartnerPages();
   const canPublish = path.trim().length > 0 && signed;
   const contactHint = isContactOverridden(override)
     ? "Custom for this page. Profile still holds the default."
@@ -80,12 +83,26 @@ export function PublishSettings({
     if (!canPublish) {
       return;
     }
+    const slug = path.trim();
     if (!hasGlobalPixels && hasAnyPixelId(settings.pixel)) {
       establishGlobalPixels(context, school.id, settings.pixel);
+      publishPage(school, slug);
       setPublishState("globals-saved");
       return;
     }
+    publishPage(school, slug);
     setPublishState("published");
+  }
+
+  if (publishState !== "idle") {
+    return (
+      <PublishSuccess
+        schoolName={school.name}
+        slug={path.trim()}
+        query={query}
+        globalsSaved={publishState === "globals-saved"}
+      />
+    );
   }
 
   return (
@@ -208,14 +225,6 @@ export function PublishSettings({
                 Publish
               </Button>
             </div>
-            {signed && publishState === "globals-saved" ? (
-              <FieldDescription>
-                Published. These tracking pixel IDs are now your global settings,
-                so every new page starts from them.
-              </FieldDescription>
-            ) : signed && publishState === "published" ? (
-              <FieldDescription>Published.</FieldDescription>
-            ) : null}
           </div>
         </div>
       </FieldGroup>

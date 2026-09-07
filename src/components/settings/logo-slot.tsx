@@ -13,14 +13,16 @@ export function LogoSlot({
   onChange,
   hint,
   stacked = false,
+  readOnly = false,
   className,
   emptyLabel = "School Logo",
   addedLabel = "School logo added",
 }: {
   added: boolean;
-  onChange: () => void;
+  onChange?: () => void;
   hint?: string;
   stacked?: boolean;
+  readOnly?: boolean;
   className?: string;
   emptyLabel?: string;
   addedLabel?: string;
@@ -36,16 +38,18 @@ export function LogoSlot({
       <EmptyTitle className="text-xs font-medium tracking-normal text-muted-foreground">
         {added ? addedLabel : emptyLabel}
       </EmptyTitle>
-      <EmptyContent className="w-auto max-w-none">
-        <Button type="button" variant="outline" size="sm" onClick={onChange}>
-          {added ? "Replace" : "Change"}
-        </Button>
-        {hint ? (
-          <p className="text-xs tracking-[0.12px] text-muted-foreground">
-            {hint}
-          </p>
-        ) : null}
-      </EmptyContent>
+      {readOnly ? null : (
+        <EmptyContent className="w-auto max-w-none">
+          <Button type="button" variant="outline" size="sm" onClick={onChange}>
+            {added ? "Replace" : "Change"}
+          </Button>
+          {hint ? (
+            <p className="text-xs tracking-[0.12px] text-muted-foreground">
+              {hint}
+            </p>
+          ) : null}
+        </EmptyContent>
+      )}
     </Empty>
   );
 }

@@ -3,9 +3,11 @@
 import { useSyncExternalStore } from "react";
 
 import type { PartnerPage } from "@/lib/mock-pages";
+import type { School } from "@/lib/mock-schools";
 import {
   defaultPartnerPages,
   getPartnerPages,
+  publishPartnerPage,
   savePartnerPages,
   subscribePartnerPages,
 } from "@/lib/partner-pages";
@@ -21,5 +23,9 @@ export function usePartnerPages() {
     savePartnerPages(next);
   }
 
-  return { pages, setPages };
+  function publishPage(school: School, slug: string) {
+    publishPartnerPage(school, slug);
+  }
+
+  return { pages, setPages, publishPage };
 }
