@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -43,18 +42,14 @@ export function GettingStartedForm({
   );
   const [email, setEmail] = useState(defaultEmail);
   const [emailError, setEmailError] = useState<string | null>(null);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
-  const canSearch = isValidEmail(email) && acceptedTerms;
+  const canSearch = isValidEmail(email);
 
   return (
     <form
       className="flex w-full flex-col gap-5"
       onSubmit={(event) => {
         event.preventDefault();
-        if (!acceptedTerms) {
-          return;
-        }
         const nextEmail = email.trim();
         if (!isValidEmail(nextEmail)) {
           setEmailError("Enter a valid work email to continue.");
@@ -135,30 +130,16 @@ export function GettingStartedForm({
           Owner is allowed.
         </FieldDescription>
 
-        <Field orientation="horizontal" className="w-auto items-start gap-2">
-          <Checkbox
-            id="accept-terms"
-            checked={acceptedTerms}
-            onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
-          />
-          <FieldLabel
-            htmlFor="accept-terms"
-            className="text-sm font-normal tracking-[0.07px]"
+        <p className="text-sm font-normal tracking-[0.07px] text-foreground">
+          By signing up, I&apos;m agreeing to the{" "}
+          <button
+            type="button"
+            className="underline underline-offset-4 hover:text-foreground"
+            onClick={() => setTermsOpen(true)}
           >
-            Read Our{" "}
-            <button
-              type="button"
-              className="underline underline-offset-4 hover:text-foreground"
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                setTermsOpen(true);
-              }}
-            >
-              Terms and Conditions
-            </button>
-          </FieldLabel>
-        </Field>
+            Terms and Conditions
+          </button>.
+        </p>
 
         <Button type="submit" className="w-fit" disabled={!canSearch}>
           Verify email
@@ -196,15 +177,6 @@ export function GettingStartedForm({
               onClick={() => setTermsOpen(false)}
             >
               Close
-            </Button>
-            <Button
-              type="button"
-              onClick={() => {
-                setAcceptedTerms(true);
-                setTermsOpen(false);
-              }}
-            >
-              Accept
             </Button>
           </DialogFooter>
         </DialogContent>
