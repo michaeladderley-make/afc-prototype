@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { resetPartnershipAgreementsForSignup } from "@/lib/partnership-agreement";
 
 type RegistrantType = "school" | "network";
 
@@ -59,6 +60,7 @@ export function GettingStartedForm({
           setEmailError("Enter a valid work email to continue.");
           return;
         }
+        resetPartnershipAgreementsForSignup();
         const params = new URLSearchParams({
           email: nextEmail,
           type: registrantType,

@@ -90,6 +90,31 @@ export function unsignedPartnershipAgreement() {
   return false;
 }
 
+export function resetPartnershipAgreementsForSignup() {
+  const current = readRecord();
+  const next: AgreementRecord = {};
+  for (const [school, entry] of Object.entries(current)) {
+    if (entry.pendingInvite) {
+      next[school] = {
+        signed: false,
+        pendingInvite: entry.pendingInvite,
+      };
+    }
+  }
+  writeRecord(next);
+}
+
+export function resetPartnershipAgreementForSchool(school: string) {
+  const current = getSchoolAgreement(school);
+  writeRecord({
+    ...readRecord(),
+    [school]: {
+      signed: false,
+      pendingInvite: current.pendingInvite,
+    },
+  });
+}
+
 export function markPartnershipAgreementSigned(
   school: string,
   signer: AgreementSigner,
@@ -143,7 +168,7 @@ export function isPendingInvitee(email: string, school: string) {
 
 export function partnershipAgreementHref(
   query: string,
-  from: "profile" | "page-builder" | "publish",
+  from: "profile" | "page-builder" | "publish" | "signup",
 ) {
   return `/partnership-agreement?${query}&from=${from}`;
 }

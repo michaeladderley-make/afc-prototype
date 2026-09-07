@@ -38,10 +38,5 @@ export default async function SettingUpProfilePage({
     lastName: familyName,
     role: schoolRole,
   };
-  const nextHref = `/page-builder?${new URLSearchParams({
-    ...context,
-    welcome: "1",
-  }).toString()}`;
-
-  return <SettingUpProfile context={context} nextHref={nextHref} />;
+  return <SettingUpProfile context={context} />;
 }
