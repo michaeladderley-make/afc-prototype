@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { PartnershipAgreementPrompt } from "@/components/partnership/partnership-agreement-prompt";
 import { LogoSlot } from "@/components/settings/logo-slot";
 import { TrackingPixelField } from "@/components/settings/tracking-pixel-field";
 import {
@@ -43,9 +44,17 @@ export function PartnerProfile({ context }: { context: PartnerContext }) {
 
   return (
     <div className="flex w-full max-w-[640px] flex-col items-stretch gap-10">
-      <h1 className="text-left text-[28px] leading-[34px] font-medium tracking-[0.42px] text-foreground">
-        Profile
-      </h1>
+      <div className="flex flex-col gap-5">
+        <h1 className="text-left text-[28px] leading-[34px] font-medium tracking-[0.42px] text-foreground">
+          Profile
+        </h1>
+        <PartnershipAgreementPrompt
+          email={context.email}
+          school={context.school}
+          query={partnerQuery(context)}
+          from="profile"
+        />
+      </div>
       <FieldGroup className="w-full gap-5">
         <FieldGroup className="flex-row gap-3">
           <Field className="gap-2">

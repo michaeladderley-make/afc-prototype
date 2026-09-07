@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
+import { PartnershipAgreementPrompt } from "@/components/partnership/partnership-agreement-prompt";
 import { TrackingPixelField } from "@/components/settings/tracking-pixel-field";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,7 @@ import {
 import type { School } from "@/lib/mock-schools";
 import { PAGE_URL_BASE } from "@/lib/page-urls";
 import type { PartnerContext } from "@/lib/partner-context";
+import { usePartnershipAgreement } from "@/lib/use-partnership-agreement";
 import {
   clearPagePixelOverride,
   establishGlobalPixels,
@@ -51,7 +53,8 @@ export function PublishSettings({
     context,
     school.id,
   );
-  const canPublish = path.trim().length > 0;
+  const { signed } = usePartnershipAgreement(context.email, school.id);
+  const canPublish = path.trim().length > 0 && signed;
   const contactHint = isContactOverridden(override)
     ? "Custom for this page. Profile still holds the default."
     : "Default from Profile. Edits apply to this page only.";
@@ -188,23 +191,32 @@ export function PublishSettings({
           onReset={hasGlobalPixels ? resetPixels : undefined}
         />
 
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-3">
-            <Button asChild variant="outline">
-              <Link href={`/page-builder?${query}`}>Edit page</Link>
-            </Button>
-            <Button type="submit" disabled={!canPublish}>
-              Publish
-            </Button>
+        <div className="flex w-full flex-col gap-5">
+          <PartnershipAgreementPrompt
+            email={context.email}
+            school={school.id}
+            query={query}
+            from="publish"
+            tone="warning"
+          />
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <Button asChild variant="outline">
+                <Link href={`/page-builder?${query}`}>Edit page</Link>
+              </Button>
+              <Button type="submit" disabled={!canPublish}>
+                Publish
+              </Button>
+            </div>
+            {signed && publishState === "globals-saved" ? (
+              <FieldDescription>
+                Published. These tracking pixel IDs are now your global settings,
+                so every new page starts from them.
+              </FieldDescription>
+            ) : signed && publishState === "published" ? (
+              <FieldDescription>Published.</FieldDescription>
+            ) : null}
           </div>
-          {publishState === "globals-saved" ? (
-            <FieldDescription>
-              Published. These tracking pixel IDs are now your global settings,
-              so every new page starts from them.
-            </FieldDescription>
-          ) : publishState === "published" ? (
-            <FieldDescription>Published.</FieldDescription>
-          ) : null}
         </div>
       </FieldGroup>
     </form>

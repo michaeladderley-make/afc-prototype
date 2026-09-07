@@ -56,6 +56,9 @@ export function PageBuilderWorkspace({
             dismissWelcome();
           }
         }}
+        email={context.email}
+        school={context.school}
+        query={query}
       />
     </div>
   );

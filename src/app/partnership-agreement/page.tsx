@@ -1,15 +1,22 @@
 import { redirect } from "next/navigation";
 
 import { PartnerHeader } from "@/components/partner/partner-header";
-import { PartnerProfile } from "@/components/profile/partner-profile";
+import { PartnershipAgreementView } from "@/components/partnership/partnership-agreement-view";
 import { getSchoolById } from "@/lib/mock-schools";
 import { partnerQuery } from "@/lib/partner-context";
 
-export default async function ProfilePage({
+export default async function PartnershipAgreementPage({
   searchParams,
-}: PageProps<"/profile">) {
-  const { email, type, school: schoolId, firstName, lastName, role } =
-    await searchParams;
+}: PageProps<"/partnership-agreement">) {
+  const {
+    email,
+    type,
+    school: schoolId,
+    firstName,
+    lastName,
+    role,
+    from,
+  } = await searchParams;
   const workEmail = typeof email === "string" ? email.trim() : "";
   const registrantType = typeof type === "string" ? type : "school";
   const selectedSchoolId = typeof schoolId === "string" ? schoolId : "";
@@ -35,6 +42,12 @@ export default async function ProfilePage({
     role: schoolRole,
   };
   const query = partnerQuery(context);
+  const returnHref =
+    from === "page-builder"
+      ? `/page-builder?${query}`
+      : from === "publish"
+        ? `/publish?${query}`
+        : `/profile?${query}`;
 
   return (
     <div className="flex min-h-full flex-col bg-background">
@@ -42,11 +55,16 @@ export default async function ProfilePage({
         userName={`${givenName} ${familyName}`}
         schoolName={school.name}
         query={query}
-        activeNav="profile"
         showDraftBadge={false}
       />
       <main className="flex w-full flex-1 justify-center px-16 pt-24 pb-16">
-        <PartnerProfile context={context} />
+        <PartnershipAgreementView
+          email={workEmail}
+          school={school.id}
+          firstName={givenName}
+          lastName={familyName}
+          returnHref={returnHref}
+        />
       </main>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { PartnershipAgreementPrompt } from "@/components/partnership/partnership-agreement-prompt";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,9 +14,15 @@ import {
 export function PageBuilderWelcome({
   open,
   onOpenChange,
+  email,
+  school,
+  query,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  email: string;
+  school: string;
+  query: string;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -39,6 +46,12 @@ export function PageBuilderWelcome({
             </div>
           </DialogDescription>
         </DialogHeader>
+        <PartnershipAgreementPrompt
+          email={email}
+          school={school}
+          query={query}
+          from="page-builder"
+        />
         <p className="text-xs tracking-[0.12px] text-muted-foreground *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground">
           If you have any issues, please contact us at{" "}
           <a href="mailto:support@afc.com">support@afc.com</a>
