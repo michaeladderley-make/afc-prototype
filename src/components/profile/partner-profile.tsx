@@ -17,6 +17,7 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -194,11 +195,13 @@ export function PartnerProfile({ context }: { context: PartnerContext }) {
               />
             </Field>
 
+            <Separator />
+
             <TrackingPixelField
               idPrefix="profile-pixel"
               values={settings.pixel}
               onChange={(pixel) => update({ pixel })}
-              description="New pages inherit these IDs. A page only differs if you change it on that page."
+              description="These are your Portal defaults. New pages start from them. Changing IDs on a page does not change these defaults."
             />
           </FieldGroup>
         </FieldSet>

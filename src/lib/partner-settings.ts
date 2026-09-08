@@ -1,14 +1,56 @@
 import type { PartnerContext } from "@/lib/partner-context";
 
 export const PIXEL_PROVIDERS = [
-  { value: "ga4", label: "GA4" },
-  { value: "meta", label: "Meta" },
-  { value: "microsoft-uet", label: "Microsoft UET" },
+  {
+    value: "ga4",
+    label: "GA4",
+    example: "G-XXXXXXXXXX",
+    pattern: /^G-[A-Z0-9]+$/i,
+    error: "Enter a GA4 ID like G-XXXXXXXXXX.",
+  },
+  {
+    value: "meta",
+    label: "Meta",
+    example: "a numeric ID",
+    pattern: /^\d+$/,
+    error: "Enter a numeric Meta pixel ID.",
+  },
+  {
+    value: "microsoft-uet",
+    label: "Microsoft UET",
+    example: "a numeric ID",
+    pattern: /^\d+$/,
+    error: "Enter a numeric Microsoft UET ID.",
+  },
+  {
+    value: "google-ads",
+    label: "Google Ads",
+    example: "AW-XXXXXXXXX",
+    pattern: /^AW-[A-Z0-9]+$/i,
+    error: "Enter a Google Ads ID like AW-XXXXXXXXX.",
+  },
 ] as const;
 
 export type PixelProvider = (typeof PIXEL_PROVIDERS)[number]["value"];
 
 export type PixelSettings = Record<PixelProvider, string>;
+
+export function pixelExampleText(provider: PixelProvider) {
+  const spec = PIXEL_PROVIDERS.find((item) => item.value === provider);
+  return spec ? `Example: ${spec.example}` : "";
+}
+
+export function pixelIdError(provider: PixelProvider, value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const spec = PIXEL_PROVIDERS.find((item) => item.value === provider);
+  if (!spec || spec.pattern.test(trimmed)) {
+    return null;
+  }
+  return spec.error;
+}
 
 export type ContactInfo = {
   firstName: string;
@@ -27,6 +69,7 @@ export function emptyPixelSettings(): PixelSettings {
     ga4: "",
     meta: "",
     "microsoft-uet": "",
+    "google-ads": "",
   };
 }
 
@@ -280,12 +323,6 @@ export function isPixelOverridden(override: PageDefaultsOverride) {
   return Boolean(override.pixel && Object.keys(override.pixel).length > 0);
 }
 
-export function hasAnyPixelId(pixel: PixelSettings) {
-  return PIXEL_PROVIDERS.some(
-    (provider) => pixel[provider.value].trim().length > 0,
-  );
-}
-
 export function clearPagePixelOverride(pageId: string) {
   const { pixel, ...rest } = getPageOverride(pageId);
   if (!pixel) {
@@ -293,15 +330,6 @@ export function clearPagePixelOverride(pageId: string) {
   }
   window.localStorage.setItem(pageKey(pageId), JSON.stringify(rest));
   notify();
-}
-
-export function establishGlobalPixels(
-  context: PartnerContext,
-  pageId: string,
-  pixel: PixelSettings,
-) {
-  patchGlobalDefaults(context, { pixel });
-  clearPagePixelOverride(pageId);
 }
 
 export function isLogoOverridden(override: PageDefaultsOverride) {

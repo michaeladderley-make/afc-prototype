@@ -14,6 +14,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import {
   InputGroup,
@@ -27,8 +28,6 @@ import type { PartnerContext } from "@/lib/partner-context";
 import { useReadiness } from "@/lib/use-readiness";
 import {
   clearPagePixelOverride,
-  establishGlobalPixels,
-  hasAnyPixelId,
   isContactOverridden,
   isPixelOverridden,
 } from "@/lib/partner-settings";
@@ -49,26 +48,20 @@ export function PublishSettings({
   query: string;
 }) {
   const [path, setPath] = useState(school.id);
-  const [publishState, setPublishState] = useState<
-    "idle" | "published" | "globals-saved"
-  >("idle");
-  const { settings, globalSettings, override, update } = usePageDefaults(
-    context,
-    school.id,
+  const [publishState, setPublishState] = useState<"idle" | "published">(
+    "idle",
   );
+  const { settings, override, update } = usePageDefaults(context, school.id);
   const { readyToPublish } = useReadiness(context, query, "publish");
   const { publishPage } = usePartnerPages();
   const canPublish = path.trim().length > 0 && readyToPublish;
   const contactHint = isContactOverridden(override)
     ? "Custom for this page. Profile still holds the default."
     : "Default from Profile. Edits apply to this page only.";
-  const hasGlobalPixels = hasAnyPixelId(globalSettings.pixel);
-  const pixelInherited = hasGlobalPixels && !isPixelOverridden(override);
+  const pixelInherited = !isPixelOverridden(override);
   const pixelHint = pixelInherited
-    ? "Inherited from your global tracking settings. Change these only if this page needs different IDs."
-    : hasGlobalPixels
-      ? "Custom for this page. Your global tracking settings stay as they are."
-      : "These become your global tracking settings when you publish, and every new page will start from them.";
+    ? "This page uses your Portal defaults. Override only if this page needs different IDs."
+    : "These IDs apply to this page only. Your Portal defaults stay as they are.";
 
   function customizePixels() {
     setPublishState("idle");
@@ -84,14 +77,7 @@ export function PublishSettings({
     if (!canPublish) {
       return;
     }
-    const slug = path.trim();
-    if (!hasGlobalPixels && hasAnyPixelId(settings.pixel)) {
-      establishGlobalPixels(context, school.id, settings.pixel);
-      publishPage(school, slug);
-      setPublishState("globals-saved");
-      return;
-    }
-    publishPage(school, slug);
+    publishPage(school, path.trim());
     setPublishState("published");
   }
 
@@ -101,7 +87,6 @@ export function PublishSettings({
         schoolName={school.name}
         slug={path.trim()}
         query={query}
-        globalsSaved={publishState === "globals-saved"}
       />
     );
   }
@@ -119,7 +104,7 @@ export function PublishSettings({
       </h1>
       <p className="text-base leading-6 text-muted-foreground">
         Set the public URL for this page. Contact and tracking start from your
-        Profile defaults.
+        Portal defaults.
       </p>
 
       <FieldGroup className="w-full gap-5">
@@ -199,6 +184,8 @@ export function PublishSettings({
           />
         </Field>
 
+        <Separator />
+
         <TrackingPixelField
           idPrefix="page-pixel"
           values={settings.pixel}
@@ -206,7 +193,7 @@ export function PublishSettings({
           description={pixelHint}
           inherited={pixelInherited}
           onCustomize={customizePixels}
-          onReset={hasGlobalPixels ? resetPixels : undefined}
+          onReset={resetPixels}
         />
 
         <div className="flex w-full flex-col gap-5">

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { copyText } from "@/lib/copy-text";
 import { liveDonationUrl, publicDonationPath } from "@/lib/page-urls";
@@ -14,12 +14,10 @@ export function PublishSuccess({
   schoolName,
   slug,
   query,
-  globalsSaved = false,
 }: {
   schoolName: string;
   slug: string;
   query: string;
-  globalsSaved?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const shareUrl = liveDonationUrl(slug);
@@ -47,12 +45,6 @@ export function PublishSuccess({
       <Field className="w-full gap-2">
         <FieldLabel htmlFor="published-url">Published URL</FieldLabel>
         <Input id="published-url" readOnly value={shareUrl} />
-        {globalsSaved ? (
-          <FieldDescription>
-            These tracking pixel IDs are now your global settings, so every new
-            page starts from them.
-          </FieldDescription>
-        ) : null}
       </Field>
       <div className="flex flex-wrap items-center gap-3">
         <Button type="button" onClick={copyUrl}>
