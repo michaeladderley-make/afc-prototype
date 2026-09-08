@@ -43,7 +43,11 @@ export default async function SmsSecurityPage({
   };
   const query = partnerQuery(context);
   const returnHref =
-    from === "publish" ? `/publish?${query}` : `/profile?${query}`;
+    from === "page-builder"
+      ? `/page-builder?${query}`
+      : from === "publish"
+        ? `/publish?${query}`
+        : `/profile?${query}`;
 
   return (
     <div className="flex min-h-full flex-col bg-background">
@@ -51,6 +55,7 @@ export default async function SmsSecurityPage({
         userName={`${givenName} ${familyName}`}
         schoolName={school.name}
         query={query}
+        context={context}
         showDraftBadge={false}
       />
       <main className="flex w-full flex-1 justify-center px-16 pt-24 pb-16">

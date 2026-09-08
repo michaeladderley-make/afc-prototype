@@ -41,6 +41,7 @@ export default async function PagesPage({
         userName={`${givenName} ${familyName}`}
         schoolName={school.name}
         query={partnerQuery(context)}
+        context={context}
         activeNav="pages"
         showDraftBadge={false}
       />

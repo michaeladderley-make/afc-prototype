@@ -40,6 +40,8 @@ export function PageBuilderWorkspace({
           userName={userName}
           schoolName={school.name}
           query={query}
+          context={context}
+          readinessFrom="page-builder"
         />
         <PageBuilderToolbar
           title={`Personalize ${school.name}`}

@@ -123,7 +123,7 @@ export function isValidMobile(value: string) {
 
 export function smsSecurityHref(
   query: string,
-  from: "profile" | "publish",
+  from: "profile" | "page-builder" | "publish",
 ) {
   return `/sms-security?${query}&from=${from}`;
 }

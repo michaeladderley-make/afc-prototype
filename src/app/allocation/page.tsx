@@ -41,6 +41,7 @@ export default async function AllocationPage({
         userName={`${givenName} ${familyName}`}
         schoolName={school.name}
         query={partnerQuery(context)}
+        context={context}
         activeNav="allocation"
         showDraftBadge={false}
         outOfSow

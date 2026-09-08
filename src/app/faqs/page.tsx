@@ -44,6 +44,14 @@ export default async function FaqsPage({
             lastName: partnerContext.lastName,
             role: partnerContext.role,
           })}
+          context={{
+            email: partnerContext.email,
+            type: partnerContext.type,
+            school: partnerContext.school,
+            firstName: partnerContext.firstName,
+            lastName: partnerContext.lastName,
+            role: partnerContext.role,
+          }}
           showDraftBadge={false}
         />
       ) : (

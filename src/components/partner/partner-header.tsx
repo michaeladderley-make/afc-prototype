@@ -1,15 +1,20 @@
 import Link from "next/link";
 
 import { FaqsLink } from "@/components/faqs/faqs-link";
+import { ReadinessMenu } from "@/components/readiness/readiness-menu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import type { PartnerContext } from "@/lib/partner-context";
+import type { ReadinessFrom } from "@/lib/readiness";
 import { cn } from "@/lib/utils";
 
 export function PartnerHeader({
   userName,
   schoolName,
   query,
+  context,
+  readinessFrom = "profile",
   activeNav,
   showDraftBadge = true,
   outOfSow = false,
@@ -17,14 +22,16 @@ export function PartnerHeader({
   userName: string;
   schoolName: string;
   query: string;
+  context: PartnerContext;
+  readinessFrom?: ReadinessFrom;
   activeNav?: "profile" | "pages" | "allocation";
   showDraftBadge?: boolean;
   outOfSow?: boolean;
 }) {
   return (
     <div>
-      <header className="flex w-full items-center justify-between bg-background px-5 py-6">
-        <div className="flex items-center gap-8">
+      <header className="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center bg-background px-5 py-6">
+        <div className="flex items-center gap-8 justify-self-start">
           <Link
             href="/"
             className="text-[28px] leading-[34px] font-medium tracking-[0.42px] text-foreground"
@@ -70,7 +77,12 @@ export function PartnerHeader({
             </Button>
           </nav>
         </div>
-        <div className="flex items-center gap-6">
+        <ReadinessMenu
+          context={context}
+          query={query}
+          from={readinessFrom}
+        />
+        <div className="flex items-center justify-end gap-6 justify-self-end">
           <FaqsLink query={query} />
           <div className="flex items-center gap-3">
             {showDraftBadge ? (
@@ -81,7 +93,7 @@ export function PartnerHeader({
                 Draft
               </Badge>
             ) : null}
-            <p className="text-sm tracking-[0.07px] text-muted-foreground">
+            <p className="max-w-[220px] truncate text-sm tracking-[0.07px] text-muted-foreground">
               {userName} · {schoolName}
             </p>
           </div>

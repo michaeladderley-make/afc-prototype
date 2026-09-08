@@ -55,6 +55,7 @@ export default async function PartnershipAgreementPage({
         userName={`${givenName} ${familyName}`}
         schoolName={school.name}
         query={query}
+        context={context}
         showDraftBadge={false}
       />
       <main className="flex w-full flex-1 justify-center px-16 pt-24 pb-16">

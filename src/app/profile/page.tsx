@@ -42,6 +42,7 @@ export default async function ProfilePage({
         userName={`${givenName} ${familyName}`}
         schoolName={school.name}
         query={query}
+        context={context}
         activeNav="profile"
         showDraftBadge={false}
       />

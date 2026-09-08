@@ -24,8 +24,7 @@ import {
 import type { School } from "@/lib/mock-schools";
 import { PAGE_URL_BASE } from "@/lib/page-urls";
 import type { PartnerContext } from "@/lib/partner-context";
-import { usePartnershipAgreement } from "@/lib/use-partnership-agreement";
-import { useSmsSecurity } from "@/lib/use-sms-security";
+import { useReadiness } from "@/lib/use-readiness";
 import {
   clearPagePixelOverride,
   establishGlobalPixels,
@@ -57,10 +56,9 @@ export function PublishSettings({
     context,
     school.id,
   );
-  const { signed } = usePartnershipAgreement(context.email, school.id);
-  const { complete: smsComplete } = useSmsSecurity(context.email);
+  const { readyToPublish } = useReadiness(context, query, "publish");
   const { publishPage } = usePartnerPages();
-  const canPublish = path.trim().length > 0 && signed && smsComplete;
+  const canPublish = path.trim().length > 0 && readyToPublish;
   const contactHint = isContactOverridden(override)
     ? "Custom for this page. Profile still holds the default."
     : "Default from Profile. Edits apply to this page only.";

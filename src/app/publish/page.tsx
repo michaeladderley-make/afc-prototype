@@ -63,6 +63,8 @@ export default async function PublishPage({
         userName={`${givenName} ${familyName}`}
         schoolName={school.name}
         query={query}
+        context={context}
+        readinessFrom="publish"
       />
       <main className="flex w-full flex-1 justify-center px-16 pt-24 pb-16">
         <PublishSettings school={school} context={context} query={query} />
