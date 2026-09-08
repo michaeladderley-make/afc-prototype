@@ -42,6 +42,9 @@ export function PageBuilderWelcome({
                 <li>Upload your school logo</li>
                 <li>Upload your cover image</li>
                 <li>Click to edit any text block</li>
+                <li>
+                  Remember to set up your 2FA so you can publish your page
+                </li>
               </ul>
             </div>
           </DialogDescription>

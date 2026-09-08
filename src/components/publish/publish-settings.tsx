@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { PartnershipAgreementPrompt } from "@/components/partnership/partnership-agreement-prompt";
+import { SmsSecurityPrompt } from "@/components/sms-security/sms-security-prompt";
 import { PublishSuccess } from "@/components/publish/publish-success";
 import { TrackingPixelField } from "@/components/settings/tracking-pixel-field";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ import type { School } from "@/lib/mock-schools";
 import { PAGE_URL_BASE } from "@/lib/page-urls";
 import type { PartnerContext } from "@/lib/partner-context";
 import { usePartnershipAgreement } from "@/lib/use-partnership-agreement";
+import { useSmsSecurity } from "@/lib/use-sms-security";
 import {
   clearPagePixelOverride,
   establishGlobalPixels,
@@ -56,8 +58,9 @@ export function PublishSettings({
     school.id,
   );
   const { signed } = usePartnershipAgreement(context.email, school.id);
+  const { complete: smsComplete } = useSmsSecurity(context.email);
   const { publishPage } = usePartnerPages();
-  const canPublish = path.trim().length > 0 && signed;
+  const canPublish = path.trim().length > 0 && signed && smsComplete;
   const contactHint = isContactOverridden(override)
     ? "Custom for this page. Profile still holds the default."
     : "Default from Profile. Edits apply to this page only.";
@@ -209,6 +212,12 @@ export function PublishSettings({
         />
 
         <div className="flex w-full flex-col gap-5">
+          <SmsSecurityPrompt
+            email={context.email}
+            query={query}
+            from="publish"
+            tone="warning"
+          />
           <PartnershipAgreementPrompt
             email={context.email}
             school={school.id}

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { PartnershipAgreementPrompt } from "@/components/partnership/partnership-agreement-prompt";
+import { SmsSecurityPrompt } from "@/components/sms-security/sms-security-prompt";
 import { LogoSlot } from "@/components/settings/logo-slot";
 import { TrackingPixelField } from "@/components/settings/tracking-pixel-field";
 import {
@@ -51,6 +52,11 @@ export function PartnerProfile({ context }: { context: PartnerContext }) {
         <PartnershipAgreementPrompt
           email={context.email}
           school={context.school}
+          query={partnerQuery(context)}
+          from="profile"
+        />
+        <SmsSecurityPrompt
+          email={context.email}
           query={partnerQuery(context)}
           from="profile"
         />
