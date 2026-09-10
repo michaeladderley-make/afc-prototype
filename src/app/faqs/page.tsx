@@ -55,7 +55,7 @@ export default async function FaqsPage({
           showDraftBadge={false}
         />
       ) : (
-        <PublicHeader />
+        <PublicHeader email={workEmail || undefined} />
       )}
       <main className="flex w-full flex-1 justify-center px-16 pt-24 pb-16">
         <div className="flex w-full max-w-[640px] flex-col gap-8">

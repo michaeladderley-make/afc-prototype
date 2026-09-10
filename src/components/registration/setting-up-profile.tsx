@@ -13,6 +13,7 @@ export function SettingUpProfile({ context }: { context: PartnerContext }) {
 
   return (
     <RegistrationLoading
+      email={context.email}
       nextHref={`/page-builder?${partnerQuery(context)}&welcome=1`}
       message="Setting up your profile..."
     />

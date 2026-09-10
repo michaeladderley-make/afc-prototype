@@ -10,6 +10,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
 
   return (
     <RegistrationShell
+      email={defaultEmail}
       progress={<ClaimProgress currentStep={1} />}
       contentClassName="flex flex-1 justify-center px-16 pt-24 pb-16"
     >

@@ -29,6 +29,7 @@ export default async function ClaimSchoolPage({
 
   return (
     <RegistrationShell
+      email={workEmail}
       progress={
         <ClaimProgress
           currentStep={3}

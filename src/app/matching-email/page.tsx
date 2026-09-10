@@ -20,6 +20,7 @@ export default async function MatchingEmailPage({
 
   return (
     <RegistrationLoading
+      email={workEmail}
       nextHref={nextHref}
       message="Matching your email address with our database."
     />

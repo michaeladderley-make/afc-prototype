@@ -12,9 +12,11 @@ export const REGISTRATION_LOADING_DURATION_MS = 5000;
 export function RegistrationLoading({
   nextHref,
   message,
+  email,
 }: {
   nextHref: string;
   message: string;
+  email?: string;
 }) {
   const router = useRouter();
 
@@ -28,7 +30,7 @@ export function RegistrationLoading({
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <PublicHeader />
+      <PublicHeader email={email} />
       <Empty className="flex-1 border-0 p-0" role="status" aria-live="polite">
         <EmptyHeader className="gap-2">
           <EmptyMedia className="mb-0">

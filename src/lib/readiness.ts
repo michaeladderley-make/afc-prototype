@@ -135,6 +135,8 @@ export function buildReadiness({
     summary,
     completedCount,
     totalCount: items.length,
-    readyToPublish: summary === "complete",
+    // AFC-owned rows stay "afc-in-progress" in this prototype and must not
+    // lock publish after the partner finishes every action-needed item.
+    readyToPublish: items.every((item) => item.status !== "action-needed"),
   };
 }

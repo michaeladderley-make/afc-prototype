@@ -6,14 +6,16 @@ export function RegistrationShell({
   progress,
   children,
   contentClassName,
+  email,
 }: {
   progress: ReactNode;
   children: ReactNode;
   contentClassName?: string;
+  email?: string;
 }) {
   return (
     <div className="flex min-h-full flex-col bg-background">
-      <PublicHeader />
+      <PublicHeader email={email} />
       {progress}
       <main className={contentClassName}>{children}</main>
     </div>

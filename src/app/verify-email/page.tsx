@@ -17,6 +17,7 @@ export default async function VerifyEmailPage({
 
   return (
     <RegistrationShell
+      email={workEmail}
       progress={
         <ClaimProgress
           currentStep={1}

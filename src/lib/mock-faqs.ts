@@ -63,6 +63,6 @@ export const MOCK_FAQS: FaqItem[] = [
     id: "more-help",
     question: "Where can I get more help?",
     answer:
-      "Use Need help? in the header to reach AFC support at afc.com, or browse these FAQs. Placeholder copy — replace with the real support channels and hours.",
+      "Use Need help? in the header to send a message to AFC support, or email support@afc.com. Placeholder copy — replace with the real support channels and hours.",
   },
 ];
