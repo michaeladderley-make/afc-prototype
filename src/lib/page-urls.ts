@@ -1,4 +1,4 @@
-import type { PartnerPage } from "@/lib/mock-pages";
+import { isLivePageStatus, type PartnerPage } from "@/lib/mock-pages";
 
 export const PAGE_URL_BASE = "donations.afc.com/";
 
@@ -18,19 +18,21 @@ export function liveDonationUrl(slug: string) {
 }
 
 function pageUrl(page: PartnerPage) {
-  const path = page.status === "Published" ? page.slug : `preview/${page.slug}`;
+  const path = isLivePageStatus(page.status)
+    ? page.slug
+    : `preview/${page.slug}`;
   return `${PAGE_URL_BASE}${path}`;
 }
 
 export function pageShareUrl(page: PartnerPage) {
-  if (page.status === "Published") {
+  if (isLivePageStatus(page.status)) {
     return liveDonationUrl(page.slug);
   }
   return `https://${pageUrl(page)}`;
 }
 
 export function pageUrlLabel(page: PartnerPage) {
-  return page.status === "Published" ? "Live URL" : "Preview URL";
+  return isLivePageStatus(page.status) ? "Live URL" : "Preview URL";
 }
 
 export function slugFromName(name: string) {

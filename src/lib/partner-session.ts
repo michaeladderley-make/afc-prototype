@@ -67,6 +67,25 @@ export function savePartnerSession(context: PartnerContext) {
   );
 }
 
+export function listPartnerSessions(): PartnerContext[] {
+  return Object.values(readRecord());
+}
+
+export function getAnyPartnerSession(): PartnerContext | null {
+  return listPartnerSessions()[0] ?? null;
+}
+
+export function findPartnerSessionForSchool(
+  schoolId: string,
+): PartnerContext | null {
+  const sessions = listPartnerSessions();
+  return (
+    sessions.find((session) => session.school === schoolId) ??
+    sessions[0] ??
+    null
+  );
+}
+
 export function getPartnerSession(email: string): PartnerContext | null {
   const key = accountKey(email);
   if (!key) {

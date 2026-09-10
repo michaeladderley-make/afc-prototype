@@ -1,10 +1,16 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { PageBuilderEdit } from "@/components/page-builder/page-builder-edit";
+import { PromoteBar } from "@/components/promote/promote-bar";
+import { PromotionView } from "@/components/promote/promotion-view";
 import type { PartnerContext } from "@/lib/partner-context";
-import { resolvePublishedDonationFrom } from "@/lib/partner-pages";
+import { resolveDonationFrom } from "@/lib/partner-pages";
+import {
+  findPartnerSessionForSchool,
+  pageBuilderHref,
+} from "@/lib/partner-session";
 import { usePartnerPages } from "@/lib/use-partner-pages";
 
 function donorContext(schoolId: string): PartnerContext {
@@ -18,14 +24,44 @@ function donorContext(schoolId: string): PartnerContext {
   };
 }
 
-export function PublicDonationPage({ slug }: { slug: string }) {
+export function PublicDonationPage({
+  slug,
+  partnerContext = null,
+  openPromote = false,
+}: {
+  slug: string;
+  partnerContext?: PartnerContext | null;
+  openPromote?: boolean;
+}) {
   const { pages } = usePartnerPages();
+  const [viewer, setViewer] = useState<PartnerContext | null>(partnerContext);
+  const [sessionReady, setSessionReady] = useState(Boolean(partnerContext));
+  const [view, setView] = useState<"page" | "promote">(
+    openPromote ? "promote" : "page",
+  );
+
+  useEffect(() => {
+    if (partnerContext) {
+      setViewer(partnerContext);
+      setSessionReady(true);
+      return;
+    }
+    setViewer(findPartnerSessionForSchool(slug));
+    setSessionReady(true);
+  }, [partnerContext, slug]);
+
   const resolved = useMemo(
-    () => resolvePublishedDonationFrom(pages, slug),
-    [pages, slug],
+    () =>
+      resolveDonationFrom(pages, slug, {
+        allowUnpublished: Boolean(viewer),
+      }),
+    [pages, slug, viewer],
   );
 
   if (!resolved) {
+    if (!sessionReady) {
+      return <main className="min-h-dvh w-full bg-background" />;
+    }
     return (
       <main className="flex min-h-dvh w-full items-center justify-center bg-background px-8">
         <div className="flex max-w-md flex-col gap-2 text-center">
@@ -40,14 +76,31 @@ export function PublicDonationPage({ slug }: { slug: string }) {
     );
   }
 
+  const builderHref = viewer
+    ? pageBuilderHref({
+        ...viewer,
+        school: resolved.page.editableSchoolId ?? viewer.school,
+      })
+    : "/sign-in";
+
   return (
     <main className="min-h-dvh w-full bg-background">
-      <PageBuilderEdit
-        school={resolved.school}
-        context={donorContext(resolved.school.id)}
-        publicView
-        slug={slug}
+      <PromoteBar
+        pageName={resolved.page.name}
+        builderHref={builderHref}
+        view={view}
+        onViewChange={setView}
       />
+      {view === "promote" ? (
+        <PromotionView page={resolved.page} schoolName={resolved.school.name} />
+      ) : (
+        <PageBuilderEdit
+          school={resolved.school}
+          context={donorContext(resolved.school.id)}
+          publicView
+          slug={slug}
+        />
+      )}
     </main>
   );
 }

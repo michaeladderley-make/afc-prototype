@@ -1,4 +1,8 @@
-export type PageStatus = "Published" | "Draft";
+export type PageStatus = "Published" | "Draft" | "Paused";
+
+export function isLivePageStatus(status: PageStatus) {
+  return status === "Published";
+}
 
 export type PartnerPage = {
   id: string;
@@ -32,7 +36,7 @@ export const MOCK_PAGES: PartnerPage[] = [
     id: "page-c",
     name: "Pagename C",
     slug: "pagename-c",
-    status: "Published",
+    status: "Paused",
     meta: "Public  ·  High  ·  Grades 9–12",
     address: "1842 Oak Street, Austin, TX 78704  ·  Austin ISD",
   },

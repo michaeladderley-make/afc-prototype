@@ -1,4 +1,8 @@
-import { MOCK_PAGES, type PartnerPage } from "@/lib/mock-pages";
+import {
+  isLivePageStatus,
+  MOCK_PAGES,
+  type PartnerPage,
+} from "@/lib/mock-pages";
 import { getSchoolById, type School } from "@/lib/mock-schools";
 import { slugFromName } from "@/lib/page-urls";
 
@@ -71,19 +75,24 @@ function schoolFromPage(page: PartnerPage): School {
   };
 }
 
-export function resolvePublishedDonationFrom(
+function pageMatchesSlug(page: PartnerPage, slug: string) {
+  return (
+    page.slug === slug ||
+    page.id === slug ||
+    page.editableSchoolId === slug
+  );
+}
+
+export function resolveDonationFrom(
   pages: PartnerPage[],
   slug: string,
+  { allowUnpublished = false }: { allowUnpublished?: boolean } = {},
 ) {
-  const page = pages.find((entry) => {
-    if (entry.status !== "Published") {
+  const page = [...pages, ...MOCK_PAGES].find((entry) => {
+    if (!allowUnpublished && !isLivePageStatus(entry.status)) {
       return false;
     }
-    return (
-      entry.slug === slug ||
-      entry.id === slug ||
-      entry.editableSchoolId === slug
-    );
+    return pageMatchesSlug(entry, slug);
   });
   if (!page) {
     const school = getSchoolById(slug);
@@ -106,6 +115,13 @@ export function resolvePublishedDonationFrom(
   const school =
     getSchoolById(page.editableSchoolId ?? page.id) ?? schoolFromPage(page);
   return { page, school };
+}
+
+export function resolvePublishedDonationFrom(
+  pages: PartnerPage[],
+  slug: string,
+) {
+  return resolveDonationFrom(pages, slug);
 }
 
 export function resolvePublishedDonation(slug: string) {

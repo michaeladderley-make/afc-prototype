@@ -23,7 +23,12 @@ import {
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { type PartnerPage } from "@/lib/mock-pages";
-import { pageShareUrl, pageUrlLabel, uniqueSlug } from "@/lib/page-urls";
+import {
+  pageShareUrl,
+  pageUrlLabel,
+  publicDonationPath,
+  uniqueSlug,
+} from "@/lib/page-urls";
 import { partnerQuery, type PartnerContext } from "@/lib/partner-context";
 import { usePartnerPages } from "@/lib/use-partner-pages";
 
@@ -116,12 +121,14 @@ export function MyPages({ context }: { context: PartnerContext }) {
       </div>
 
       {pages.map((page) => {
+        const pageQuery = partnerQuery({
+          ...context,
+          school: page.editableSchoolId ?? context.school,
+        });
         const editHref = page.editableSchoolId
-          ? `/page-builder?${partnerQuery({
-              ...context,
-              school: page.editableSchoolId,
-            })}`
+          ? `/page-builder?${pageQuery}`
           : null;
+        const promoteHref = `${publicDonationPath(page.slug)}?${pageQuery}&promote=1`;
 
         return (
           <div
@@ -164,6 +171,9 @@ export function MyPages({ context }: { context: PartnerContext }) {
                 onClick={() => copyUrl(page)}
               >
                 {copiedId === page.id ? <Check /> : <Copy />}
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={promoteHref}>Promote</Link>
               </Button>
               {editHref ? (
                 <Button asChild variant="outline">

@@ -51,7 +51,11 @@ export function PublishSuccess({
           {copied ? "Copied" : "Copy URL"}
         </Button>
         <Button asChild variant="outline">
-          <a href={publicDonationPath(slug)} target="_blank" rel="noreferrer">
+          <a
+            href={`${publicDonationPath(slug)}?${query}`}
+            target="_blank"
+            rel="noreferrer"
+          >
             View page
           </a>
         </Button>
