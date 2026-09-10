@@ -174,7 +174,7 @@ export function partnershipAgreementHref(
 }
 
 export function partnershipInviteSignupHref(email: string) {
-  return `/?${new URLSearchParams({ email }).toString()}`;
+  return `/get-started?${new URLSearchParams({ email }).toString()}`;
 }
 
 export function isValidWorkEmail(value: string) {

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { FaqsLink } from "@/components/faqs/faqs-link";
+import { ExperienceBadge } from "@/components/prototype/experience-badge";
 import { ReadinessMenu } from "@/components/readiness/readiness-menu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,12 +33,15 @@ export function PartnerHeader({
     <div>
       <header className="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center bg-background px-5 py-6">
         <div className="flex items-center gap-8 justify-self-start">
-          <Link
-            href="/"
-            className="text-[28px] leading-[34px] font-medium tracking-[0.42px] text-foreground"
-          >
-            AFC
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="text-[28px] leading-[34px] font-medium tracking-[0.42px] text-foreground"
+            >
+              AFC
+            </Link>
+            <ExperienceBadge />
+          </div>
           <nav className="flex items-start gap-6">
             <Button
               asChild
