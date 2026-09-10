@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FileText } from "lucide-react";
+import { Check, FileText } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { partnershipAgreementHref } from "@/lib/partnership-agreement";
@@ -26,7 +26,32 @@ export function PartnershipAgreementPrompt({
   const { signed } = usePartnershipAgreement(email, school);
 
   if (signed) {
-    return null;
+    if (from !== "profile") {
+      return null;
+    }
+    return (
+      <div
+        className={cn(
+          "flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-foreground",
+          className,
+        )}
+      >
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-800">
+          <Check className="size-5" aria-hidden />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium tracking-[0.07px]">
+            Partnership Agreement
+          </p>
+          <p className="text-xs tracking-[0.12px] text-emerald-800">
+            Completed
+          </p>
+        </div>
+        <Button asChild variant="outline">
+          <Link href={partnershipAgreementHref(query, from)}>View</Link>
+        </Button>
+      </div>
+    );
   }
 
   return (

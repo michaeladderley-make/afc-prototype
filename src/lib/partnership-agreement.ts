@@ -180,3 +180,10 @@ export function partnershipInviteSignupHref(email: string) {
 export function isValidWorkEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
+
+export const PARTNERSHIP_AGREEMENT_COPY = [
+  "This Partnership Agreement (the “Agreement”) is a prototype placeholder. It does not create a legal obligation and is shown only so partners can review the signing flow.",
+  "By signing, you confirm that you are authorized to represent your school or network and that you intend to complete a partnership with Athletes For Change for fundraising pages on this platform.",
+  "The live agreement will describe permitted use of school marks, donor communication standards, allocation of funds to student-athletes, and how either party may end the partnership.",
+  "Until the final agreement is published, treat this page as a design preview. Signing here only marks the step complete in this prototype.",
+];

@@ -15,28 +15,25 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { downloadPartnershipAgreementPdf } from "@/lib/partnership-agreement-pdf";
 import {
   isValidWorkEmail,
+  PARTNERSHIP_AGREEMENT_COPY,
   partnershipInviteSignupHref,
 } from "@/lib/partnership-agreement";
 import { usePartnershipAgreement } from "@/lib/use-partnership-agreement";
 
-const MOCK_AGREEMENT = [
-  "This Partnership Agreement (the “Agreement”) is a prototype placeholder. It does not create a legal obligation and is shown only so partners can review the signing flow.",
-  "By signing, you confirm that you are authorized to represent your school or network and that you intend to complete a partnership with Athletes For Change for fundraising pages on this platform.",
-  "The live agreement will describe permitted use of school marks, donor communication standards, allocation of funds to student-athletes, and how either party may end the partnership.",
-  "Until the final agreement is published, treat this page as a design preview. Signing here only marks the step complete in this prototype.",
-];
-
 export function PartnershipAgreementView({
   email,
   school,
+  schoolName,
   firstName,
   lastName,
   returnHref,
 }: {
   email: string;
   school: string;
+  schoolName: string;
   firstName: string;
   lastName: string;
   returnHref: string;
@@ -103,8 +100,13 @@ export function PartnershipAgreementView({
             Partnership Agreement
           </h1>
           <p className="text-base leading-6 text-muted-foreground">
-            This agreement has been signed. You can publish your donation page.
+            This agreement has been signed for {schoolName}.
           </p>
+        </div>
+        <div className="space-y-4 text-sm leading-6 tracking-[0.07px] text-foreground">
+          {PARTNERSHIP_AGREEMENT_COPY.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
         </div>
         {signer ? (
           <p className="text-sm tracking-[0.07px] text-foreground">
@@ -115,9 +117,22 @@ export function PartnershipAgreementView({
             You have already signed this agreement.
           </p>
         )}
-        <Button asChild variant="outline" className="w-fit">
-          <Link href={returnHref}>Back</Link>
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            type="button"
+            onClick={() =>
+              downloadPartnershipAgreementPdf({
+                schoolName,
+                signer,
+              })
+            }
+          >
+            Download PDF
+          </Button>
+          <Button asChild variant="outline">
+            <Link href={returnHref}>Back</Link>
+          </Button>
+        </div>
       </div>
     );
   }
@@ -136,7 +151,7 @@ export function PartnershipAgreementView({
       </div>
 
       <div className="space-y-4 text-sm leading-6 tracking-[0.07px] text-foreground">
-        {MOCK_AGREEMENT.map((paragraph) => (
+        {PARTNERSHIP_AGREEMENT_COPY.map((paragraph) => (
           <p key={paragraph}>{paragraph}</p>
         ))}
       </div>
