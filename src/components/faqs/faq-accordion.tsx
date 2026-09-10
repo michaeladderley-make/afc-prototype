@@ -4,12 +4,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { MOCK_FAQS } from "@/lib/mock-faqs";
+import { MOCK_FAQS, type FaqItem } from "@/lib/mock-faqs";
 
-export function FaqAccordion() {
+export function FaqAccordion({ items = MOCK_FAQS }: { items?: FaqItem[] }) {
   return (
     <Accordion type="single" collapsible className="w-full">
-      {MOCK_FAQS.map((faq) => (
+      {items.map((faq) => (
         <AccordionItem key={faq.id} value={faq.id}>
           <AccordionTrigger className="text-base font-medium tracking-[0.07px] hover:no-underline">
             {faq.question}

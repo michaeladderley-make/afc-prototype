@@ -1,4 +1,4 @@
-import { FaqAccordion } from "@/components/faqs/faq-accordion";
+import { FaqsAndCalendar } from "@/components/faqs/faqs-and-calendar";
 import { PartnerHeader } from "@/components/partner/partner-header";
 import { PublicHeader } from "@/components/registration/public-header";
 import { getSchoolById } from "@/lib/mock-schools";
@@ -52,24 +52,14 @@ export default async function FaqsPage({
             lastName: partnerContext.lastName,
             role: partnerContext.role,
           }}
+          activeNav="faqs"
           showDraftBadge={false}
         />
       ) : (
         <PublicHeader email={workEmail || undefined} />
       )}
       <main className="flex w-full flex-1 justify-center px-16 pt-24 pb-16">
-        <div className="flex w-full max-w-[640px] flex-col gap-8">
-          <div className="flex flex-col gap-3">
-            <h1 className="text-[28px] leading-[34px] font-medium tracking-[0.42px] text-foreground">
-              FAQs
-            </h1>
-            <p className="text-base leading-6 text-muted-foreground">
-              Common questions about registering, claiming a school, and
-              publishing fundraising pages.
-            </p>
-          </div>
-          <FaqAccordion />
-        </div>
+        <FaqsAndCalendar helpEmail={workEmail} />
       </main>
     </div>
   );

@@ -12,7 +12,7 @@ const EXPERIENCES = [
 
 export function ExperiencePicker() {
   return (
-    <div className="flex min-h-full flex-1 flex-col items-center justify-center px-16 py-24">
+    <div className="flex flex-1 flex-col items-center justify-center px-16 py-24">
       <div className="flex w-full max-w-[880px] flex-col items-center gap-10">
         <h1 className="text-center text-[28px] leading-[34px] font-medium tracking-[0.42px] text-foreground">
           Select an experience

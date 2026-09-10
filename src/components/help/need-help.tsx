@@ -25,7 +25,17 @@ import { isValidWorkEmail } from "@/lib/partnership-agreement";
 
 export const SUPPORT_EMAIL = "support@afc.com";
 
-export function NeedHelp({ email = "" }: { email?: string }) {
+export function NeedHelp({
+  email = "",
+  label = "Need help?",
+  variant = "ghost",
+  idPrefix = "help",
+}: {
+  email?: string;
+  label?: string;
+  variant?: "ghost" | "default";
+  idPrefix?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [sent, setSent] = useState(false);
   const [userEmail, setUserEmail] = useState(email);
@@ -72,10 +82,14 @@ export function NeedHelp({ email = "" }: { email?: string }) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button
-          variant="ghost"
-          className="h-auto px-0 text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-foreground"
+          variant={variant}
+          className={
+            variant === "ghost"
+              ? "h-auto px-0 text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-foreground"
+              : undefined
+          }
         >
-          Need help?
+          {label}
         </Button>
       </DialogTrigger>
       <DialogContent className="rounded-[4px] sm:max-w-lg">
@@ -104,9 +118,9 @@ export function NeedHelp({ email = "" }: { email?: string }) {
             </DialogHeader>
             <FieldGroup className="gap-5">
               <Field data-invalid={emailError ? true : undefined} className="gap-2">
-                <FieldLabel htmlFor="help-email">Email</FieldLabel>
+                <FieldLabel htmlFor={`${idPrefix}-email`}>Email</FieldLabel>
                 <Input
-                  id="help-email"
+                  id={`${idPrefix}-email`}
                   type="email"
                   required
                   autoComplete="email"
@@ -126,9 +140,9 @@ export function NeedHelp({ email = "" }: { email?: string }) {
                 data-invalid={messageError ? true : undefined}
                 className="gap-2"
               >
-                <FieldLabel htmlFor="help-message">Message</FieldLabel>
+                <FieldLabel htmlFor={`${idPrefix}-message`}>Message</FieldLabel>
                 <Textarea
-                  id="help-message"
+                  id={`${idPrefix}-message`}
                   required
                   value={message}
                   placeholder="How can we help?"

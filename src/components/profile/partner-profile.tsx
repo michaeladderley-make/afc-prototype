@@ -3,21 +3,18 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { OrganizationDetailsSection } from "@/components/profile/organization-details";
+import { ProfileSection } from "@/components/profile/profile-section";
 import { PartnershipAgreementPrompt } from "@/components/partnership/partnership-agreement-prompt";
 import { SmsSecurityPrompt } from "@/components/sms-security/sms-security-prompt";
 import { LogoSlot } from "@/components/settings/logo-slot";
 import { TrackingPixelField } from "@/components/settings/tracking-pixel-field";
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSeparator,
-  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -62,58 +59,122 @@ export function PartnerProfile({ context }: { context: PartnerContext }) {
           from="profile"
         />
       </div>
-      <FieldGroup className="w-full gap-5">
-        <FieldGroup className="flex-row gap-3">
-          <Field className="gap-2">
-            <FieldLabel htmlFor="profile-first-name">First name</FieldLabel>
-            <Input
-              id="profile-first-name"
-              value={context.firstName}
-              readOnly
-            />
-          </Field>
-          <Field className="gap-2">
-            <FieldLabel htmlFor="profile-last-name">Last name</FieldLabel>
-            <Input id="profile-last-name" value={context.lastName} readOnly />
-          </Field>
-        </FieldGroup>
-        <Field className="gap-2">
-          <FieldLabel htmlFor="profile-email">Email</FieldLabel>
-          <Input
-            id="profile-email"
-            type="email"
-            value={context.email}
-            readOnly
-          />
-        </Field>
-        <Field className="gap-2">
-          <FieldLabel htmlFor="profile-role">Role</FieldLabel>
-          <Select value={role} onValueChange={updateRole}>
-            <SelectTrigger
-              id="profile-role"
-              className="w-full"
-              aria-label="Role"
-            >
-              <SelectValue placeholder="Principal, development officer, or other" />
-            </SelectTrigger>
-            <SelectContent>
-              {ROLE_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Field>
+      <div className="flex w-full flex-col gap-10">
+        <ProfileSection
+          title="Contact Info"
+          description="Your account details and the contact shown on donation pages."
+        >
+          <FieldGroup className="gap-5">
+            <p className="text-sm font-medium tracking-[0.07px] text-foreground">
+              Account
+            </p>
+            <FieldGroup className="flex-row gap-3">
+              <Field className="gap-2">
+                <FieldLabel htmlFor="profile-first-name">First name</FieldLabel>
+                <Input
+                  id="profile-first-name"
+                  value={context.firstName}
+                  readOnly
+                />
+              </Field>
+              <Field className="gap-2">
+                <FieldLabel htmlFor="profile-last-name">Last name</FieldLabel>
+                <Input
+                  id="profile-last-name"
+                  value={context.lastName}
+                  readOnly
+                />
+              </Field>
+            </FieldGroup>
+            <Field className="gap-2">
+              <FieldLabel htmlFor="profile-email">Email</FieldLabel>
+              <Input
+                id="profile-email"
+                type="email"
+                value={context.email}
+                readOnly
+              />
+            </Field>
+            <Field className="gap-2">
+              <FieldLabel htmlFor="profile-role">Role</FieldLabel>
+              <Select value={role} onValueChange={updateRole}>
+                <SelectTrigger
+                  id="profile-role"
+                  className="w-full"
+                  aria-label="Role"
+                >
+                  <SelectValue placeholder="Principal, development officer, or other" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ROLE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+            <p className="pt-2 text-sm font-medium tracking-[0.07px] text-foreground">
+              Donation page contact
+            </p>
+            <FieldGroup className="flex-row gap-3">
+              <Field className="gap-2">
+                <FieldLabel htmlFor="contact-first-name">First name</FieldLabel>
+                <Input
+                  id="contact-first-name"
+                  value={settings.contact.firstName}
+                  autoComplete="given-name"
+                  onChange={(event) =>
+                    update({ contact: { firstName: event.target.value } })
+                  }
+                />
+              </Field>
+              <Field className="gap-2">
+                <FieldLabel htmlFor="contact-last-name">Last name</FieldLabel>
+                <Input
+                  id="contact-last-name"
+                  value={settings.contact.lastName}
+                  autoComplete="family-name"
+                  onChange={(event) =>
+                    update({ contact: { lastName: event.target.value } })
+                  }
+                />
+              </Field>
+            </FieldGroup>
+            <Field className="gap-2">
+              <FieldLabel htmlFor="contact-phone">Phone number</FieldLabel>
+              <Input
+                id="contact-phone"
+                type="tel"
+                value={settings.contact.phone}
+                autoComplete="tel"
+                onChange={(event) =>
+                  update({ contact: { phone: event.target.value } })
+                }
+              />
+            </Field>
+            <Field className="gap-2">
+              <FieldLabel htmlFor="contact-email">Email address</FieldLabel>
+              <Input
+                id="contact-email"
+                type="email"
+                value={settings.contact.email}
+                autoComplete="email"
+                onChange={(event) =>
+                  update({ contact: { email: event.target.value } })
+                }
+              />
+            </Field>
+          </FieldGroup>
+        </ProfileSection>
 
-        <FieldSeparator />
+        <OrganizationDetailsSection schoolId={context.school} />
 
-        <FieldSet>
-          <FieldLegend>Defaults for donation pages</FieldLegend>
-          <FieldDescription>
-            These apply to every page unless you change them on that page.
-          </FieldDescription>
-          <FieldGroup className="mt-4 gap-5">
+        <ProfileSection
+          title="Page Defaults"
+          description="These apply to every page unless you change them on that page."
+        >
+          <FieldGroup className="gap-5">
             <Field className="gap-2">
               <FieldLabel>School logo</FieldLabel>
               <LogoSlot
@@ -123,7 +184,6 @@ export function PartnerProfile({ context }: { context: PartnerContext }) {
                 onChange={() => update({ logo: { added: true } })}
               />
             </Field>
-
             <Field className="gap-2">
               <FieldLabel>Cover photo</FieldLabel>
               <LogoSlot
@@ -135,68 +195,6 @@ export function PartnerProfile({ context }: { context: PartnerContext }) {
                 onChange={() => update({ cover: { added: true } })}
               />
             </Field>
-
-            <FieldGroup className="flex-row gap-3">
-              <Field className="gap-2">
-                <FieldLabel htmlFor="contact-first-name">
-                  Contact first name
-                </FieldLabel>
-                <Input
-                  id="contact-first-name"
-                  value={settings.contact.firstName}
-                  autoComplete="given-name"
-                  onChange={(event) =>
-                    update({ contact: { firstName: event.target.value } })
-                  }
-                />
-              </Field>
-              <Field className="gap-2">
-                <FieldLabel htmlFor="contact-last-name">
-                  Contact last name
-                </FieldLabel>
-                <Input
-                  id="contact-last-name"
-                  value={settings.contact.lastName}
-                  autoComplete="family-name"
-                  onChange={(event) =>
-                    update({ contact: { lastName: event.target.value } })
-                  }
-                />
-              </Field>
-            </FieldGroup>
-
-            <Field className="gap-2">
-              <FieldLabel htmlFor="contact-phone">
-                Contact phone number
-              </FieldLabel>
-              <Input
-                id="contact-phone"
-                type="tel"
-                value={settings.contact.phone}
-                autoComplete="tel"
-                onChange={(event) =>
-                  update({ contact: { phone: event.target.value } })
-                }
-              />
-            </Field>
-
-            <Field className="gap-2">
-              <FieldLabel htmlFor="contact-email">
-                Contact email address
-              </FieldLabel>
-              <Input
-                id="contact-email"
-                type="email"
-                value={settings.contact.email}
-                autoComplete="email"
-                onChange={(event) =>
-                  update({ contact: { email: event.target.value } })
-                }
-              />
-            </Field>
-
-            <Separator />
-
             <TrackingPixelField
               idPrefix="profile-pixel"
               values={settings.pixel}
@@ -204,8 +202,8 @@ export function PartnerProfile({ context }: { context: PartnerContext }) {
               description="These are your Portal defaults. New pages start from them. Changing IDs on a page does not change these defaults."
             />
           </FieldGroup>
-        </FieldSet>
-      </FieldGroup>
+        </ProfileSection>
+      </div>
     </div>
   );
 }

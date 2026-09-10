@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FaqsLink } from "@/components/faqs/faqs-link";
 import { NeedHelp } from "@/components/help/need-help";
 import { ExperienceBadge } from "@/components/prototype/experience-badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 export function PublicHeader({
@@ -25,6 +26,13 @@ export function PublicHeader({
           <ExperienceBadge experience={experience} />
         </div>
         <div className="flex items-center gap-6">
+          <Button
+            asChild
+            variant="ghost"
+            className="h-auto px-0 text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-foreground"
+          >
+            <Link href="/sign-in">Partner</Link>
+          </Button>
           <NeedHelp email={email} />
           <FaqsLink />
         </div>

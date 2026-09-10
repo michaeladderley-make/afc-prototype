@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { FaqsLink } from "@/components/faqs/faqs-link";
+import { PartnerSessionSync } from "@/components/partner/partner-session-sync";
 import { ExperienceBadge } from "@/components/prototype/experience-badge";
 import { ReadinessMenu } from "@/components/readiness/readiness-menu";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +10,37 @@ import { Separator } from "@/components/ui/separator";
 import type { PartnerContext } from "@/lib/partner-context";
 import type { ReadinessFrom } from "@/lib/readiness";
 import { cn } from "@/lib/utils";
+
+export type PartnerNav =
+  | "profile"
+  | "pages"
+  | "allocation"
+  | "donations"
+  | "users"
+  | "faqs";
+
+function NavLink({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: string;
+}) {
+  return (
+    <Button
+      asChild
+      variant="ghost"
+      className={cn(
+        "h-auto px-0 text-sm font-normal tracking-[0.07px] hover:bg-transparent hover:text-foreground",
+        active ? "text-foreground" : "text-muted-foreground",
+      )}
+    >
+      <Link href={href}>{children}</Link>
+    </Button>
+  );
+}
 
 export function PartnerHeader({
   userName,
@@ -25,12 +57,13 @@ export function PartnerHeader({
   query: string;
   context: PartnerContext;
   readinessFrom?: ReadinessFrom;
-  activeNav?: "profile" | "pages" | "allocation";
+  activeNav?: PartnerNav;
   showDraftBadge?: boolean;
   outOfSow?: boolean;
 }) {
   return (
     <div>
+      <PartnerSessionSync context={context} />
       <header className="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center bg-background px-5 py-6">
         <div className="flex items-center gap-8 justify-self-start">
           <div className="flex items-center gap-3">
@@ -43,42 +76,27 @@ export function PartnerHeader({
             <ExperienceBadge />
           </div>
           <nav className="flex items-start gap-6">
-            <Button
-              asChild
-              variant="ghost"
-              className={cn(
-                "h-auto px-0 text-sm font-normal tracking-[0.07px] hover:bg-transparent hover:text-foreground",
-                activeNav === "profile"
-                  ? "text-foreground"
-                  : "text-muted-foreground",
-              )}
+            <NavLink href={`/profile?${query}`} active={activeNav === "profile"}>
+              Profile
+            </NavLink>
+            <NavLink href={`/pages?${query}`} active={activeNav === "pages"}>
+              Pages
+            </NavLink>
+            <NavLink
+              href={`/allocation?${query}`}
+              active={activeNav === "allocation"}
             >
-              <Link href={`/profile?${query}`}>Profile</Link>
-            </Button>
-            <Button
-              asChild
-              variant="ghost"
-              className={cn(
-                "h-auto px-0 text-sm font-normal tracking-[0.07px] hover:bg-transparent hover:text-foreground",
-                activeNav === "pages"
-                  ? "text-foreground"
-                  : "text-muted-foreground",
-              )}
+              Allocation
+            </NavLink>
+            <NavLink
+              href={`/donations?${query}`}
+              active={activeNav === "donations"}
             >
-              <Link href={`/pages?${query}`}>Pages</Link>
-            </Button>
-            <Button
-              asChild
-              variant="ghost"
-              className={cn(
-                "h-auto px-0 text-sm font-normal tracking-[0.07px] hover:bg-transparent hover:text-foreground",
-                activeNav === "allocation"
-                  ? "text-foreground"
-                  : "text-muted-foreground",
-              )}
-            >
-              <Link href={`/allocation?${query}`}>Allocation</Link>
-            </Button>
+              Donations
+            </NavLink>
+            <NavLink href={`/users?${query}`} active={activeNav === "users"}>
+              Users
+            </NavLink>
           </nav>
         </div>
         <ReadinessMenu
@@ -87,7 +105,7 @@ export function PartnerHeader({
           from={readinessFrom}
         />
         <div className="flex items-center justify-end gap-6 justify-self-end">
-          <FaqsLink query={query} />
+          <FaqsLink query={query} active={activeNav === "faqs"} />
           <div className="flex items-center gap-3">
             {showDraftBadge ? (
               <Badge
