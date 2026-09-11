@@ -7,6 +7,10 @@ export const ROLE_OPTIONS = [
 
 export type SchoolRole = (typeof ROLE_OPTIONS)[number]["value"];
 
+export function isSchoolRole(role: string): role is SchoolRole {
+  return ROLE_OPTIONS.some((option) => option.value === role);
+}
+
 export function getRoleLabel(role: string) {
   return ROLE_OPTIONS.find((option) => option.value === role)?.label ?? role;
 }

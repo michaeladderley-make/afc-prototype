@@ -65,6 +65,7 @@ export default async function PartnershipAgreementPage({
           schoolName={school.name}
           firstName={givenName}
           lastName={familyName}
+          role={schoolRole}
           returnHref={returnHref}
         />
       </main>

@@ -15,12 +15,20 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { downloadPartnershipAgreementPdf } from "@/lib/partnership-agreement-pdf";
 import {
   isValidWorkEmail,
   PARTNERSHIP_AGREEMENT_COPY,
   partnershipInviteSignupHref,
 } from "@/lib/partnership-agreement";
+import { getRoleLabel, isSchoolRole, ROLE_OPTIONS } from "@/lib/school-roles";
 import { usePartnershipAgreement } from "@/lib/use-partnership-agreement";
 
 export function PartnershipAgreementView({
@@ -29,6 +37,7 @@ export function PartnershipAgreementView({
   schoolName,
   firstName,
   lastName,
+  role,
   returnHref,
 }: {
   email: string;
@@ -36,6 +45,7 @@ export function PartnershipAgreementView({
   schoolName: string;
   firstName: string;
   lastName: string;
+  role: string;
   returnHref: string;
 }) {
   const router = useRouter();
@@ -47,7 +57,7 @@ export function PartnershipAgreementView({
   const [legalName, setLegalName] = useState(
     [firstName, lastName].filter(Boolean).join(" "),
   );
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(isSchoolRole(role) ? role : "");
   const [inviteEmail, setInviteEmail] = useState(pendingInvite?.email ?? "");
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [inviteSentTo, setInviteSentTo] = useState<string | null>(
@@ -73,7 +83,7 @@ export function PartnershipAgreementView({
     if (!canSign) {
       return;
     }
-    approve({ legalName: legalName.trim(), title: title.trim() });
+    approve({ legalName: legalName.trim(), title: getRoleLabel(title) });
     router.push(returnHref);
   }
 
@@ -169,13 +179,22 @@ export function PartnershipAgreementView({
           </Field>
           <Field className="gap-2">
             <FieldLabel htmlFor="org-title">Title</FieldLabel>
-            <Input
-              id="org-title"
-              value={title}
-              autoComplete="organization-title"
-              placeholder="e.g. Athletic director"
-              onChange={(event) => setTitle(event.target.value)}
-            />
+            <Select value={title} onValueChange={setTitle}>
+              <SelectTrigger
+                id="org-title"
+                className="w-full"
+                aria-label="Title"
+              >
+                <SelectValue placeholder="Principal, development officer, or other" />
+              </SelectTrigger>
+              <SelectContent>
+                {ROLE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </Field>
         </FieldGroup>
 
