@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isValidWorkEmail } from "@/lib/partnership-agreement";
+import { cn } from "@/lib/utils";
 
 export const SUPPORT_EMAIL = "support@afc.com";
 
@@ -30,11 +31,15 @@ export function NeedHelp({
   label = "Need help?",
   variant = "ghost",
   idPrefix = "help",
+  overlayClassName,
+  contentClassName,
 }: {
   email?: string;
   label?: string;
-  variant?: "ghost" | "default";
+  variant?: "ghost" | "default" | "outline";
   idPrefix?: string;
+  overlayClassName?: string;
+  contentClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [sent, setSent] = useState(false);
@@ -86,13 +91,18 @@ export function NeedHelp({
           className={
             variant === "ghost"
               ? "h-auto px-0 text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-foreground"
-              : undefined
+              : variant === "outline"
+                ? "w-full"
+                : undefined
           }
         >
           {label}
         </Button>
       </DialogTrigger>
-      <DialogContent className="rounded-[4px] sm:max-w-lg">
+      <DialogContent
+        className={cn("rounded-[4px] sm:max-w-lg", contentClassName)}
+        overlayClassName={overlayClassName}
+      >
         {sent ? (
           <>
             <DialogHeader>

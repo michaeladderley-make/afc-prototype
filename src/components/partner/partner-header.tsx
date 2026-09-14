@@ -1,8 +1,10 @@
 import Link from "next/link";
 
 import { FaqsLink } from "@/components/faqs/faqs-link";
+import { NeedHelp } from "@/components/help/need-help";
 import { PartnerSessionSync } from "@/components/partner/partner-session-sync";
-import { ExperienceBadge } from "@/components/prototype/experience-badge";
+import { ExperienceBanner } from "@/components/prototype/experience-banner";
+import { PrototypeBanner } from "@/components/prototype/prototype-banner";
 import { ReadinessMenu } from "@/components/readiness/readiness-menu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +14,7 @@ import type { ReadinessFrom } from "@/lib/readiness";
 import { cn } from "@/lib/utils";
 
 export type PartnerNav =
+  | "dashboard"
   | "profile"
   | "pages"
   | "allocation"
@@ -64,18 +67,22 @@ export function PartnerHeader({
   return (
     <div>
       <PartnerSessionSync context={context} />
+      <ExperienceBanner />
       <header className="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center bg-background px-5 py-6">
         <div className="flex items-center gap-8 justify-self-start">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="text-[28px] leading-[34px] font-medium tracking-[0.42px] text-foreground"
-            >
-              AFC
-            </Link>
-            <ExperienceBadge />
-          </div>
+          <Link
+            href="/"
+            className="text-[28px] leading-[34px] font-medium tracking-[0.42px] text-foreground"
+          >
+            AFC
+          </Link>
           <nav className="flex items-start gap-6">
+            <NavLink
+              href={`/dashboard?${query}`}
+              active={activeNav === "dashboard"}
+            >
+              Dashboard
+            </NavLink>
             <NavLink href={`/profile?${query}`} active={activeNav === "profile"}>
               Profile
             </NavLink>
@@ -106,6 +113,7 @@ export function PartnerHeader({
         />
         <div className="flex items-center justify-end gap-6 justify-self-end">
           <FaqsLink query={query} active={activeNav === "faqs"} />
+          <NeedHelp email={context.email} />
           <div className="flex items-center gap-3">
             {showDraftBadge ? (
               <Badge
@@ -122,12 +130,10 @@ export function PartnerHeader({
         </div>
       </header>
       {outOfSow ? (
-        <div className="border-t border-border bg-muted px-5 py-2">
-          <p className="text-center text-xs tracking-[0.12px] text-muted-foreground">
-            This page is not in the current SOW. It is included in the
-            prototype only and will not be part of the first release.
-          </p>
-        </div>
+        <PrototypeBanner className="border-t">
+          This page is not in the current SOW. It is included in the prototype
+          only and will not be part of the first release.
+        </PrototypeBanner>
       ) : null}
       <Separator />
     </div>

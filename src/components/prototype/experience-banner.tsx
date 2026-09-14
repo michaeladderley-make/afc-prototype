@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-import { Badge } from "@/components/ui/badge";
+import { PrototypeBanner } from "@/components/prototype/prototype-banner";
 import {
   EXPERIENCE_LABEL,
   parseExperience,
@@ -10,7 +10,7 @@ import {
 } from "@/lib/experience";
 import { useExperience } from "@/lib/use-experience";
 
-export function ExperienceBadge({ experience }: { experience?: string }) {
+export function ExperienceBanner({ experience }: { experience?: string }) {
   const stored = useExperience();
   const fromQuery = parseExperience(experience);
   const resolved = fromQuery ?? stored;
@@ -26,11 +26,8 @@ export function ExperienceBadge({ experience }: { experience?: string }) {
   }
 
   return (
-    <Badge
-      variant="secondary"
-      className="h-auto rounded-[4px] border border-border px-3 py-1 text-xs font-normal tracking-[0.12px]"
-    >
-      {EXPERIENCE_LABEL[resolved]}
-    </Badge>
+    <PrototypeBanner variant="inverse">
+      Prototype experience: {EXPERIENCE_LABEL[resolved]}
+    </PrototypeBanner>
   );
 }
