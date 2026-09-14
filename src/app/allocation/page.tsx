@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { AllocationBoard } from "@/components/allocation/allocation-board";
+import { DashboardSubnav } from "@/components/dashboard/dashboard-subnav";
 import { PartnerHeader } from "@/components/partner/partner-header";
 import { getSchoolById } from "@/lib/mock-schools";
 import { partnerQuery } from "@/lib/partner-context";
@@ -34,19 +35,21 @@ export default async function AllocationPage({
     lastName: familyName,
     role: schoolRole,
   };
+  const query = partnerQuery(context);
 
   return (
     <div className="flex min-h-full flex-col bg-background">
       <PartnerHeader
         userName={`${givenName} ${familyName}`}
         schoolName={school.name}
-        query={partnerQuery(context)}
+        query={query}
         context={context}
-        activeNav="allocation"
+        activeNav="dashboard"
         showDraftBadge={false}
         outOfSow
       />
-      <main className="flex w-full justify-center px-16 pt-24 pb-16">
+      <main className="relative flex w-full justify-center px-16 pt-24 pb-16">
+        <DashboardSubnav query={query} section="allocation" />
         <AllocationBoard />
       </main>
     </div>

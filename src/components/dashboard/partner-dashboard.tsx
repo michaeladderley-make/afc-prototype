@@ -39,7 +39,7 @@ export function PartnerDashboard({
 
   return (
     <>
-      <DashboardSubnav query={query} view={view} />
+      <DashboardSubnav query={query} section={view} />
       {view === "performance" ? (
         <PagePerformance context={context} schoolName={schoolName} />
       ) : (

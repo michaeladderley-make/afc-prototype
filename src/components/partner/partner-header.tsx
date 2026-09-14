@@ -13,14 +13,7 @@ import type { PartnerContext } from "@/lib/partner-context";
 import type { ReadinessFrom } from "@/lib/readiness";
 import { cn } from "@/lib/utils";
 
-export type PartnerNav =
-  | "dashboard"
-  | "profile"
-  | "pages"
-  | "allocation"
-  | "donations"
-  | "users"
-  | "faqs";
+export type PartnerNav = "dashboard" | "profile" | "pages" | "faqs";
 
 function NavLink({
   href,
@@ -88,21 +81,6 @@ export function PartnerHeader({
             </NavLink>
             <NavLink href={`/pages?${query}`} active={activeNav === "pages"}>
               Pages
-            </NavLink>
-            <NavLink
-              href={`/allocation?${query}`}
-              active={activeNav === "allocation"}
-            >
-              Allocation
-            </NavLink>
-            <NavLink
-              href={`/donations?${query}`}
-              active={activeNav === "donations"}
-            >
-              Donations
-            </NavLink>
-            <NavLink href={`/users?${query}`} active={activeNav === "users"}>
-              Users
             </NavLink>
           </nav>
         </div>

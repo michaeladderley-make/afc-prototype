@@ -1,3 +1,4 @@
+import { DashboardSubnav } from "@/components/dashboard/dashboard-subnav";
 import { PartnerHeader } from "@/components/partner/partner-header";
 import { UsersDirectory } from "@/components/users/users-directory";
 import { requirePartnerPage } from "@/lib/require-partner";
@@ -14,10 +15,11 @@ export default async function UsersPage({
         schoolName={school.name}
         query={query}
         context={context}
-        activeNav="users"
+        activeNav="dashboard"
         showDraftBadge={false}
       />
-      <main className="flex w-full justify-center px-16 pt-24 pb-16">
+      <main className="relative flex w-full justify-center px-16 pt-24 pb-16">
+        <DashboardSubnav query={query} section="users" />
         <UsersDirectory schoolId={school.id} schoolName={school.name} />
       </main>
     </div>

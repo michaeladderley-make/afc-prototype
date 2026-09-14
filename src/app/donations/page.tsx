@@ -1,3 +1,4 @@
+import { DashboardSubnav } from "@/components/dashboard/dashboard-subnav";
 import { PartnerDonations } from "@/components/donations/partner-donations";
 import { PartnerHeader } from "@/components/partner/partner-header";
 import { requirePartnerPage } from "@/lib/require-partner";
@@ -16,10 +17,11 @@ export default async function DonationsPage({
         schoolName={school.name}
         query={query}
         context={context}
-        activeNav="donations"
+        activeNav="dashboard"
         showDraftBadge={false}
       />
-      <main className="flex w-full justify-center px-16 pt-24 pb-16">
+      <main className="relative flex w-full justify-center px-16 pt-24 pb-16">
+        <DashboardSubnav query={query} section="donations" />
         <PartnerDonations
           context={context}
           schoolName={school.name}
