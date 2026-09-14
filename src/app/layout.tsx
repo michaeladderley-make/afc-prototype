@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist_Mono, Inter } from "next/font/google";
+
+import { NeedHelpWidget } from "@/components/help/need-help-widget";
 import "./globals.css";
 
 const inter = Inter({
@@ -25,6 +28,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
         {children}
+        <Suspense fallback={null}>
+          <NeedHelpWidget />
+        </Suspense>
       </body>
     </html>
   );

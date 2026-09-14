@@ -1,4 +1,4 @@
-import { FaqsAndCalendar } from "@/components/faqs/faqs-and-calendar";
+import { PartnerFaqs } from "@/components/faqs/partner-faqs";
 import { PartnerHeader } from "@/components/partner/partner-header";
 import { PublicHeader } from "@/components/registration/public-header";
 import { getSchoolById } from "@/lib/mock-schools";
@@ -59,7 +59,7 @@ export default async function FaqsPage({
         <PublicHeader email={workEmail || undefined} />
       )}
       <main className="flex w-full flex-1 justify-center px-16 pt-24 pb-16">
-        <FaqsAndCalendar helpEmail={workEmail} />
+        <PartnerFaqs helpEmail={workEmail} />
       </main>
     </div>
   );

@@ -113,9 +113,6 @@ export function DonationDetailSheet({
                 email={email}
                 label="Get help with this donation"
                 variant="outline"
-                idPrefix={`donation-${gift.id}`}
-                overlayClassName="z-[70]"
-                contentClassName="z-[70]"
               />
             </SheetFooter>
           </div>

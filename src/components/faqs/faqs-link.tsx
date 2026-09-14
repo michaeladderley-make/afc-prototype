@@ -24,7 +24,7 @@ export function FaqsLink({
         className,
       )}
     >
-      <Link href={href}>FAQs & Calendar</Link>
+      <Link href={href}>FAQs</Link>
     </Button>
   );
 }

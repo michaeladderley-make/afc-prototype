@@ -139,7 +139,7 @@ export function ClaimSchoolForm({
           <FieldLabel className="tracking-[0.07px]">Role at school</FieldLabel>
           <Select value={role} onValueChange={setRole}>
             <SelectTrigger className="w-full" aria-label="Role at school">
-              <SelectValue placeholder="Principal, development officer, or other" />
+              <SelectValue placeholder="Principal, Head of School, or CEO" />
             </SelectTrigger>
             <SelectContent>
               {ROLE_OPTIONS.map((option) => (

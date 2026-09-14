@@ -1,13 +1,11 @@
 import Link from "next/link";
 
 import { FaqsLink } from "@/components/faqs/faqs-link";
-import { NeedHelp } from "@/components/help/need-help";
 import { ExperienceBanner } from "@/components/prototype/experience-banner";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 export function PublicHeader({
-  email,
   experience,
 }: {
   email?: string;
@@ -31,7 +29,6 @@ export function PublicHeader({
           >
             <Link href="/sign-in">Partner</Link>
           </Button>
-          <NeedHelp email={email} />
           <FaqsLink />
         </div>
       </header>

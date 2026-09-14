@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import { FaqsLink } from "@/components/faqs/faqs-link";
-import { NeedHelp } from "@/components/help/need-help";
 import { PartnerSessionSync } from "@/components/partner/partner-session-sync";
 import { ExperienceBanner } from "@/components/prototype/experience-banner";
 import { PrototypeBanner } from "@/components/prototype/prototype-banner";
@@ -13,7 +11,12 @@ import type { PartnerContext } from "@/lib/partner-context";
 import type { ReadinessFrom } from "@/lib/readiness";
 import { cn } from "@/lib/utils";
 
-export type PartnerNav = "dashboard" | "profile" | "pages" | "faqs";
+export type PartnerNav =
+  | "dashboard"
+  | "profile"
+  | "pages"
+  | "calendar"
+  | "faqs";
 
 function NavLink({
   href,
@@ -76,11 +79,17 @@ export function PartnerHeader({
             >
               Dashboard
             </NavLink>
-            <NavLink href={`/profile?${query}`} active={activeNav === "profile"}>
-              Profile
-            </NavLink>
             <NavLink href={`/pages?${query}`} active={activeNav === "pages"}>
               Pages
+            </NavLink>
+            <NavLink
+              href={`/calendar?${query}`}
+              active={activeNav === "calendar"}
+            >
+              Calendar
+            </NavLink>
+            <NavLink href={`/faqs?${query}`} active={activeNav === "faqs"}>
+              FAQs
             </NavLink>
           </nav>
         </div>
@@ -90,8 +99,6 @@ export function PartnerHeader({
           from={readinessFrom}
         />
         <div className="flex items-center justify-end gap-6 justify-self-end">
-          <FaqsLink query={query} active={activeNav === "faqs"} />
-          <NeedHelp email={context.email} />
           <div className="flex items-center gap-3">
             {showDraftBadge ? (
               <Badge
@@ -101,9 +108,17 @@ export function PartnerHeader({
                 Draft
               </Badge>
             ) : null}
-            <p className="max-w-[220px] truncate text-sm tracking-[0.07px] text-muted-foreground">
+            <Link
+              href={`/profile?${query}`}
+              className={cn(
+                "text-sm tracking-[0.07px] hover:text-foreground",
+                activeNav === "profile"
+                  ? "text-foreground"
+                  : "text-muted-foreground",
+              )}
+            >
               {userName} · {schoolName}
-            </p>
+            </Link>
           </div>
         </div>
       </header>

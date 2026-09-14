@@ -185,7 +185,7 @@ export function PartnershipAgreementView({
                 className="w-full"
                 aria-label="Title"
               >
-                <SelectValue placeholder="Principal, development officer, or other" />
+                <SelectValue placeholder="Principal, Head of School, or CEO" />
               </SelectTrigger>
               <SelectContent>
                 {ROLE_OPTIONS.map((option) => (

@@ -1,8 +1,9 @@
 export const ROLE_OPTIONS = [
   { value: "principal", label: "Principal" },
-  { value: "development-officer", label: "Development officer" },
-  { value: "athletic-director", label: "Athletic director" },
-  { value: "other", label: "Other" },
+  { value: "head-of-school", label: "Head of School" },
+  { value: "chief-executive-officer", label: "Chief Executive Officer" },
+  { value: "admissions-director", label: "Admissions Director" },
+  { value: "business-director", label: "Business Director" },
 ] as const;
 
 export type SchoolRole = (typeof ROLE_OPTIONS)[number]["value"];

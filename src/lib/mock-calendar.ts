@@ -61,3 +61,34 @@ export const MOCK_CALENDAR: CalendarItem[] = [
 export function upcomingCalendarItems(items = MOCK_CALENDAR) {
   return items.slice().sort((a, b) => a.start.localeCompare(b.start));
 }
+
+export function parseCalendarDate(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+export function formatDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+export function startOfDay(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+export function isSameDay(left: Date, right: Date) {
+  return formatDateKey(left) === formatDateKey(right);
+}
+
+export function itemOccursOn(item: CalendarItem, date: Date) {
+  const start = startOfDay(parseCalendarDate(item.start));
+  const end = startOfDay(parseCalendarDate(item.end ?? item.start));
+  const current = startOfDay(date);
+  return current >= start && current <= end;
+}
+
+export function itemsOnDate(items: CalendarItem[], date: Date) {
+  return items.filter((item) => itemOccursOn(item, date));
+}

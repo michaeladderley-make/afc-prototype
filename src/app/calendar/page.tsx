@@ -1,4 +1,4 @@
-import { FaqsAndCalendar } from "@/components/faqs/faqs-and-calendar";
+import { PartnerCalendar } from "@/components/calendar/partner-calendar";
 import { PartnerHeader } from "@/components/partner/partner-header";
 import { requirePartnerPage } from "@/lib/require-partner";
 
@@ -14,11 +14,11 @@ export default async function CalendarPage({
         schoolName={school.name}
         query={query}
         context={context}
-        activeNav="faqs"
+        activeNav="calendar"
         showDraftBadge={false}
       />
       <main className="flex w-full flex-1 justify-center px-16 pt-24 pb-16">
-        <FaqsAndCalendar helpEmail={context.email} focusSection="calendar" />
+        <PartnerCalendar helpEmail={context.email} />
       </main>
     </div>
   );

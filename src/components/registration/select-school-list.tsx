@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { NeedHelp } from "@/components/help/need-help";
 import { SchoolResultCard } from "@/components/registration/school-result-card";
 import { Button } from "@/components/ui/button";
 import { MOCK_SCHOOLS } from "@/lib/mock-schools";
@@ -48,13 +49,12 @@ export function SelectSchoolList({
 
       <p className="text-sm tracking-[0.07px] text-foreground">
         Can’t find your school?{" "}
-        <Button
-          type="button"
+        <NeedHelp
+          email={email}
+          label="Request help from AFC."
           variant="link"
-          className="h-auto px-0 text-sm font-normal tracking-[0.07px] text-foreground"
-        >
-          Request help from AFC.
-        </Button>
+          idPrefix="school-help"
+        />
       </p>
     </div>
   );

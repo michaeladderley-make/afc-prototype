@@ -7,7 +7,7 @@ import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empt
 import { Spinner } from "@/components/ui/spinner";
 import { PublicHeader } from "@/components/registration/public-header";
 
-export const REGISTRATION_LOADING_DURATION_MS = 5000;
+export const REGISTRATION_LOADING_DURATION_MS = 2000;
 
 export function RegistrationLoading({
   nextHref,
