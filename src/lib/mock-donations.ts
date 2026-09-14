@@ -1,3 +1,5 @@
+import { getSchoolById } from "@/lib/mock-schools";
+
 export const GIFT_TYPES = [
   "One-time",
   "Weekly",
@@ -503,10 +505,29 @@ function completeGift(gift: SchoolGiftSeed): SchoolGift {
   };
 }
 
+const SEED_SCHOOL_ID = "lincoln-high";
+
 export function giftsForSchool(schoolId: string) {
-  return MOCK_SCHOOL_GIFTS.filter((gift) => gift.schoolId === schoolId).map(
-    completeGift,
-  );
+  const own = MOCK_SCHOOL_GIFTS.filter((gift) => gift.schoolId === schoolId);
+  const seeds = own.length > 0 ? own : MOCK_SCHOOL_GIFTS;
+  const reuse = own.length === 0;
+  const school = getSchoolById(schoolId);
+
+  return seeds.map((gift) => {
+    const completed = completeGift(gift);
+    if (!reuse) {
+      return completed;
+    }
+
+    const isSchoolPage = gift.pageId === SEED_SCHOOL_ID;
+    return {
+      ...completed,
+      id: `${schoolId}-${gift.id}`,
+      schoolId,
+      pageId: isSchoolPage ? schoolId : gift.pageId,
+      page: isSchoolPage ? (school?.name ?? gift.page) : gift.page,
+    };
+  });
 }
 
 export function formatGiftDateTime(gift: Pick<SchoolGift, "date" | "time">) {
