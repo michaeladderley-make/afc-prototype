@@ -1,24 +1,36 @@
 import { PartnerCalendar } from "@/components/calendar/partner-calendar";
 import { PartnerHeader } from "@/components/partner/partner-header";
-import { requirePartnerPage } from "@/lib/require-partner";
+import { PublicHeader } from "@/components/registration/public-header";
+import { getSchoolById } from "@/lib/mock-schools";
+import {
+  optionalPartnerContext,
+  partnerQuery,
+} from "@/lib/partner-context";
 
 export default async function CalendarPage({
   searchParams,
 }: PageProps<"/calendar">) {
-  const { context, school, query } = requirePartnerPage(await searchParams);
+  const params = await searchParams;
+  const context = optionalPartnerContext(params);
+  const school = context ? getSchoolById(context.school) : undefined;
+  const workEmail = typeof params.email === "string" ? params.email.trim() : "";
 
   return (
     <div className="flex min-h-full flex-col bg-background">
-      <PartnerHeader
-        userName={`${context.firstName} ${context.lastName}`}
-        schoolName={school.name}
-        query={query}
-        context={context}
-        activeNav="calendar"
-        showDraftBadge={false}
-      />
+      {context && school ? (
+        <PartnerHeader
+          userName={`${context.firstName} ${context.lastName}`}
+          schoolName={school.name}
+          query={partnerQuery(context)}
+          context={context}
+          activeNav="calendar"
+          showDraftBadge={false}
+        />
+      ) : (
+        <PublicHeader email={workEmail || undefined} activeNav="calendar" />
+      )}
       <main className="flex w-full flex-1 justify-center px-16 pt-24 pb-16">
-        <PartnerCalendar helpEmail={context.email} />
+        <PartnerCalendar helpEmail={workEmail} />
       </main>
     </div>
   );

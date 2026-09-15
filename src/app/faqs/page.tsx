@@ -56,7 +56,7 @@ export default async function FaqsPage({
           showDraftBadge={false}
         />
       ) : (
-        <PublicHeader email={workEmail || undefined} />
+        <PublicHeader email={workEmail || undefined} activeNav="faqs" />
       )}
       <main className="flex w-full flex-1 justify-center px-16 pt-24 pb-16">
         <PartnerFaqs helpEmail={workEmail} />
