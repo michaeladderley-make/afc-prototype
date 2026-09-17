@@ -114,9 +114,9 @@ export function DonationFormElement({
   const [cadenceLimitNotice, setCadenceLimitNotice] = useState<string | null>(
     null,
   );
-  const [giftState, setGiftState] = useState<"idle" | "confirm" | "complete">(
-    "idle",
-  );
+  const [giftState, setGiftState] = useState<
+    "idle" | "identity" | "confirm" | "complete"
+  >("idle");
 
   const enabledCadences = CADENCES.filter(
     (cadence) => cadences[cadence.value].enabled,
@@ -326,7 +326,7 @@ export function DonationFormElement({
               if (!canDonate) {
                 return;
               }
-              setGiftState("confirm");
+              setGiftState(publicView ? "identity" : "confirm");
             }}
           >
             Donate and Support
@@ -471,6 +471,28 @@ export function DonationFormElement({
               <DialogFooter>
                 <Button type="button" onClick={() => setGiftState("idle")}>
                   Done
+                </Button>
+              </DialogFooter>
+            </>
+          ) : giftState === "identity" ? (
+            <>
+              <DialogHeader>
+                <DialogTitle>Confirm your identity</DialogTitle>
+                <DialogDescription>
+                  This will be a third-party integration where the user confirms
+                  their identity and is able to continue.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setGiftState("idle")}
+                >
+                  Dismiss
+                </Button>
+                <Button type="button" onClick={() => setGiftState("confirm")}>
+                  Confirm
                 </Button>
               </DialogFooter>
             </>
