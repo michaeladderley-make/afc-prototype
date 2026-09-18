@@ -2,32 +2,30 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import {
-  dashboardSectionHref,
-  type DashboardSection,
+  pagesSectionHref,
+  type PagesSection,
 } from "@/lib/reporting-links";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
-  { section: "overview", label: "Overview" },
-  { section: "donations", label: "Donations" },
-  { section: "allocation", label: "Allocation" },
-  { section: "users", label: "Users" },
+  { section: "pages", label: "Pages" },
+  { section: "performance", label: "Page Performance" },
 ] as const satisfies ReadonlyArray<{
-  section: DashboardSection;
+  section: PagesSection;
   label: string;
 }>;
 
-export function DashboardSubnav({
+export function PagesSubnav({
   query,
   section,
 }: {
   query: string;
-  section: DashboardSection;
+  section: PagesSection;
 }) {
   return (
     <nav
       className="absolute top-24 left-5 flex w-44 flex-col items-start gap-3"
-      aria-label="Dashboard"
+      aria-label="Pages"
     >
       {LINKS.map((link) => {
         const active = section === link.section;
@@ -42,7 +40,7 @@ export function DashboardSubnav({
             )}
           >
             <Link
-              href={dashboardSectionHref(query, link.section)}
+              href={pagesSectionHref(query, link.section)}
               aria-current={active ? "page" : undefined}
             >
               {link.label}

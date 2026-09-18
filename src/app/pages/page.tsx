@@ -1,52 +1,34 @@
-import { redirect } from "next/navigation";
-
+import { PagePerformance } from "@/components/dashboard/page-performance";
 import { MyPages } from "@/components/pages/my-pages";
+import { PagesSubnav } from "@/components/pages/pages-subnav";
 import { PartnerHeader } from "@/components/partner/partner-header";
-import { getSchoolById } from "@/lib/mock-schools";
-import { partnerQuery } from "@/lib/partner-context";
+import { parsePagesView } from "@/lib/reporting-links";
+import { requirePartnerPage } from "@/lib/require-partner";
 
 export default async function PagesPage({
   searchParams,
 }: PageProps<"/pages">) {
-  const { email, type, school: schoolId, firstName, lastName, role } =
-    await searchParams;
-  const workEmail = typeof email === "string" ? email.trim() : "";
-  const registrantType = typeof type === "string" ? type : "school";
-  const selectedSchoolId = typeof schoolId === "string" ? schoolId : "";
-  const givenName = typeof firstName === "string" ? firstName.trim() : "";
-  const familyName = typeof lastName === "string" ? lastName.trim() : "";
-  const schoolRole = typeof role === "string" ? role.trim() : "";
-  const school = getSchoolById(selectedSchoolId);
-
-  if (!workEmail) {
-    redirect("/");
-  }
-
-  if (!school || !givenName || !familyName || !schoolRole) {
-    redirect("/");
-  }
-
-  const context = {
-    email: workEmail,
-    type: registrantType,
-    school: school.id,
-    firstName: givenName,
-    lastName: familyName,
-    role: schoolRole,
-  };
+  const params = await searchParams;
+  const { context, school, query } = requirePartnerPage(params);
+  const view = parsePagesView(params.view);
 
   return (
     <div className="flex min-h-full flex-col bg-background">
       <PartnerHeader
-        userName={`${givenName} ${familyName}`}
+        userName={`${context.firstName} ${context.lastName}`}
         schoolName={school.name}
-        query={partnerQuery(context)}
+        query={query}
         context={context}
         activeNav="pages"
         showDraftBadge={false}
       />
-      <main className="flex w-full justify-center px-16 pt-24 pb-16">
-        <MyPages context={context} />
+      <main className="relative flex w-full justify-center px-16 pt-24 pb-16">
+        <PagesSubnav query={query} section={view} />
+        {view === "performance" ? (
+          <PagePerformance context={context} schoolName={school.name} />
+        ) : (
+          <MyPages context={context} />
+        )}
       </main>
     </div>
   );

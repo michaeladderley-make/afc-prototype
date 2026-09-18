@@ -2,13 +2,18 @@
 
 import Link from "next/link";
 
+import { Badge } from "@/components/ui/badge";
 import { saveExperience, type Experience } from "@/lib/experience";
 
 const EXPERIENCES = [
-  { id: "school", label: "School" },
-  { id: "network", label: "Network" },
-  { id: "afc", label: "AFC" },
-] as const satisfies ReadonlyArray<{ id: Experience; label: string }>;
+  { id: "school", label: "School", comingSoon: false },
+  { id: "network", label: "Network", comingSoon: true },
+  { id: "afc", label: "AFC", comingSoon: true },
+] as const satisfies ReadonlyArray<{
+  id: Experience;
+  label: string;
+  comingSoon: boolean;
+}>;
 
 export function ExperiencePicker() {
   return (
@@ -23,9 +28,17 @@ export function ExperiencePicker() {
               key={experience.id}
               href={`/get-started?experience=${experience.id}`}
               onClick={() => saveExperience(experience.id)}
-              className="flex h-40 w-56 items-center justify-center rounded-[4px] border border-border bg-background text-[21px] leading-[28px] font-medium tracking-[0.42px] text-foreground hover:ring-2 hover:ring-foreground"
+              className="flex h-40 w-56 flex-col items-center justify-center gap-2 rounded-[4px] border border-border bg-background text-[21px] leading-[28px] font-medium tracking-[0.42px] text-foreground hover:ring-2 hover:ring-foreground"
             >
               {experience.label}
+              {experience.comingSoon ? (
+                <Badge
+                  variant="secondary"
+                  className="h-auto rounded-[4px] border border-border px-2 py-0.5 text-xs font-normal tracking-[0.12px]"
+                >
+                  Coming Soon
+                </Badge>
+              ) : null}
             </Link>
           ))}
         </div>

@@ -1,13 +1,9 @@
-export type DashboardView = "overview" | "performance";
+export type DashboardSection = "overview" | "donations" | "allocation" | "users";
 
-export type DashboardSection =
-  | DashboardView
-  | "donations"
-  | "allocation"
-  | "users";
+export type PagesSection = "pages" | "performance";
 
-export function parseDashboardView(value: unknown): DashboardView {
-  return value === "performance" ? "performance" : "overview";
+export function parsePagesView(value: unknown): PagesSection {
+  return value === "performance" ? "performance" : "pages";
 }
 
 function partnerParams(query: string) {
@@ -17,15 +13,8 @@ function partnerParams(query: string) {
   return params;
 }
 
-export function dashboardHref(
-  query: string,
-  view: DashboardView = "overview",
-) {
-  const params = partnerParams(query);
-  if (view === "performance") {
-    params.set("view", "performance");
-  }
-  return `/dashboard?${params.toString()}`;
+export function dashboardHref(query: string) {
+  return `/dashboard?${partnerParams(query).toString()}`;
 }
 
 export function dashboardSectionHref(
@@ -41,7 +30,23 @@ export function dashboardSectionHref(
   if (section === "users") {
     return `/users?${partnerParams(query).toString()}`;
   }
-  return dashboardHref(query, section);
+  return dashboardHref(query);
+}
+
+export function pagesHref(query: string) {
+  return `/pages?${partnerParams(query).toString()}`;
+}
+
+export function pagePerformanceHref(query: string) {
+  const params = partnerParams(query);
+  params.set("view", "performance");
+  return `/pages?${params.toString()}`;
+}
+
+export function pagesSectionHref(query: string, section: PagesSection) {
+  return section === "performance"
+    ? pagePerformanceHref(query)
+    : pagesHref(query);
 }
 
 export function donationsHref(query: string, pageId?: string) {

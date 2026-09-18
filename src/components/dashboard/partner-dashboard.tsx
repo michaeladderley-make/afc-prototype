@@ -3,7 +3,6 @@
 import Link from "next/link";
 
 import { DashboardSubnav } from "@/components/dashboard/dashboard-subnav";
-import { PagePerformance } from "@/components/dashboard/page-performance";
 import { DonationsTable } from "@/components/reporting/donations-table";
 import { ReportingPeriodSelect } from "@/components/reporting/reporting-period-select";
 import { Button } from "@/components/ui/button";
@@ -20,31 +19,27 @@ import {
   formatDashboardMoney,
   getAverageGift,
   getDashboardSnapshot,
+  getPagePerformance,
   organizationScopeLabel,
 } from "@/lib/mock-dashboard";
 import { partnerQuery, type PartnerContext } from "@/lib/partner-context";
-import { donationsHref, type DashboardView } from "@/lib/reporting-links";
+import { donationsHref } from "@/lib/reporting-links";
+import { usePartnerPages } from "@/lib/use-partner-pages";
 import { useReportingPeriod } from "@/lib/use-reporting-period";
 
 export function PartnerDashboard({
   context,
   schoolName,
-  view,
 }: {
   context: PartnerContext;
   schoolName: string;
-  view: DashboardView;
 }) {
   const query = partnerQuery(context);
 
   return (
     <>
-      <DashboardSubnav query={query} section={view} />
-      {view === "performance" ? (
-        <PagePerformance context={context} schoolName={schoolName} />
-      ) : (
-        <DashboardOverview context={context} schoolName={schoolName} />
-      )}
+      <DashboardSubnav query={query} section="overview" />
+      <DashboardOverview context={context} schoolName={schoolName} />
     </>
   );
 }
@@ -58,6 +53,8 @@ function DashboardOverview({
 }) {
   const { period, setPeriod } = useReportingPeriod();
   const snapshot = getDashboardSnapshot(period);
+  const { pages } = usePartnerPages();
+  const pageRows = getPagePerformance(snapshot, pages);
   const averageGift = getAverageGift(snapshot);
   const query = partnerQuery(context);
   const scopeType = organizationScopeLabel(context.type);
@@ -171,6 +168,30 @@ function DashboardOverview({
           </Table>
         </section>
       </div>
+
+      <section className="flex min-w-0 flex-col gap-4">
+        <h2 className="text-base font-medium tracking-[0.07px] text-foreground">
+          Page performance
+        </h2>
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="px-0">Page</TableHead>
+              <TableHead className="px-0 text-right">Amount raised</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {pageRows.map((row) => (
+              <TableRow key={row.page.id} className="hover:bg-transparent">
+                <TableCell className="px-0">{row.page.name}</TableCell>
+                <TableCell className="px-0 text-right">
+                  {formatDashboardMoney(row.amount)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </section>
     </div>
   );
 }
